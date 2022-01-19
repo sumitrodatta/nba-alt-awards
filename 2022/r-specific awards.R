@@ -16,14 +16,18 @@ play_by_play=read_csv("Data/Player Play by Play.csv") %>% filter(season==2022)
 smoy_winners=advanced %>% filter(tm !="TOT") %>% left_join(.,per_game) %>%
   left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5) %>% 
   mutate(mp_per_game=mp/g,.after="mp") %>% arrange(desc(mp_per_game)) %>% 
-  group_by(tm,season) %>% slice(6:9) %>% group_by(season) %>% slice_max(vorp,n=5) %>% 
-  select(season,player,pos:experience,tm,g,gs,mp_per_game,vorp)
+  group_by(tm,season) %>% slice(6:9) %>% ungroup()
+
+smoy_winners %>% slice_max(vorp,n=5) %>% 
+  select(player,pos:experience,tm,g,gs,mp_per_game,vorp)
 
 smoy_winners_ppg=per_game %>% filter(tm !="TOT") %>% 
   left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5) %>%
   filter(!is.na(mp_per_game)) %>% arrange(desc(mp_per_game)) %>% group_by(tm,season) %>% 
-  slice(6:9) %>% group_by(season) %>% slice_max(pts_per_game,n=5) %>% 
-  select(season,player,pos:experience,tm,g,mp_per_game,pts_per_game)
+  slice(6:9) %>% ungroup()
+
+smoy_winners_ppg %>% slice_max(pts_per_game,n=5) %>% 
+  select(player,pos:experience,tm,g,mp_per_game,pts_per_game)
 
 # The Weakest Link award (sponsored by Jack Link's Beef Jerky, presented by the 2015 Atlanta Hawks Starting 5)*
 
@@ -31,9 +35,9 @@ smoy_winners_ppg=per_game %>% filter(tm !="TOT") %>%
 best_worst_starter_winners=advanced %>% filter(tm !="TOT") %>% left_join(.,per_game) %>%
   left_join(.,team_summaries) %>% mutate(start_percent=gs/g_total) %>% 
   filter(start_percent>=0.5) %>% mutate(mp_per_game=mp/g,.after="mp") %>% 
-  arrange(desc(mp_per_game)) %>% group_by(tm,season) %>% slice(1:5) %>% slice_min(vorp) %>% 
-  group_by(season) %>% slice_max(vorp,n=5) %>% select(season,player,pos:experience,tm,g_total,gs,mp_per_game,vorp)
-#  ungroup() %>% filter(season==2022) %>% select(season,player,pos:experience,tm,g_total,gs,mp_per_game,vorp)
+  arrange(desc(mp_per_game)) %>% group_by(tm,season) %>% slice(1:5) %>% slice_min(vorp) %>% ungroup() 
+
+best_worst_starter_winners %>% slice_max(vorp,n=5) %>% select(season,player,pos:experience,tm,g_total,gs,mp_per_game,vorp)
 
 # The Empty Calorie Stats Award (sponsored by Pop-Tarts)
 
@@ -47,11 +51,11 @@ empty_stats_df=advanced %>% filter(tm !="TOT") %>%
            empty_stats=ts_rank+usg_rank+vorp_rank) %>% ungroup()
 
 empty_stats_df %>% 
-  slice_max(empty_stats,n=50) %>% select(player,pos:experience,ts_percent,usg_percent,vorp,ts_rank:empty_stats)
+  slice_max(empty_stats,n=5) %>% select(player,pos:experience,ts_percent,usg_percent,vorp,ts_rank:empty_stats)
 
 # The "Can’t Win With These Cats" Award (sponsored by Scar from The Lion King, presented by Kevin Durant in a fake mustache)
 
-# highest difference in on/off splits between best & second-best player on team (credit to eewap for the idea)
+# highest difference in on/off splits between best & median player on team (credit to eewap for the idea)
 
 pbp_filtered=play_by_play %>% filter(tm !="TOT") %>% 
   left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5)
@@ -59,12 +63,12 @@ pbp_filtered=play_by_play %>% filter(tm !="TOT") %>%
 on_off_leaders=pbp_filtered %>% group_by(tm) %>%
   slice_max(net_plus_minus_per_100_poss) %>% ungroup() %>% select(seas_id:player,tm:mp,net_plus_minus_per_100_poss,g_percent)
 
-on_off_second=pbp_filtered %>% group_by(tm) %>% arrange(desc(net_plus_minus_per_100_poss)) %>% slice(2) %>% 
-  ungroup() %>% select(seas_id:player,tm:mp,net_plus_minus_per_100_poss,g_percent)
+on_off_median=pbp_filtered %>% group_by(tm) %>% arrange(desc(net_plus_minus_per_100_poss)) %>%
+  slice(-1) %>% summarize(median=median(net_plus_minus_per_100_poss))
 
-on_off_diff=left_join(on_off_leaders,on_off_second %>% select(tm,net_plus_minus_per_100_poss) %>% 
-                        rename(second_npm=net_plus_minus_per_100_poss)) %>% 
-  mutate(npm_diff=net_plus_minus_per_100_poss-second_npm)
+on_off_diff=left_join(on_off_leaders,on_off_median) %>%  mutate(npm_diff=net_plus_minus_per_100_poss-median)
+
+on_off_diff %>% slice_max(npm_diff,n=5) %>% select(player:npm_diff)
 
 # The Stonks Award
 
@@ -82,5 +86,9 @@ for (x in teams) {
   print(x)
 }
 
-salary_performance=left_join(contracts,advanced %>% filter(season==2022)) %>% select(player,age,salary,vorp) %>% 
-  mutate(vorp_per_dollar=vorp/salary)
+salary_performance=left_join(contracts,advanced %>% filter(season==2022)) %>% select(player,experience,age,salary,vorp) %>% 
+  mutate(vorp_per_million=vorp/salary*1000000)
+#remove any player with <=4 years of experience (rookie contract)
+salary_performance %>% filter(experience > 4) %>% arrange(desc(vorp_per_million))
+
+options(scipen=999)
