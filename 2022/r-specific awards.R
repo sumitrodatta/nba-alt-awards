@@ -2,6 +2,7 @@ library(tidyverse)
 library(rvest)
 library(polite)
 library(janitor)
+library(RSelenium)
 
 advanced=read_csv("Data/Advanced.csv") %>% filter(season==2022)
 per_game=read_csv("Data/Player Per Game.csv") %>% filter(season==2022)
@@ -69,6 +70,31 @@ on_off_median=pbp_filtered %>% group_by(tm) %>% arrange(desc(net_plus_minus_per_
 on_off_diff=left_join(on_off_leaders,on_off_median) %>%  mutate(npm_diff=net_plus_minus_per_100_poss-median)
 
 on_off_diff %>% slice_max(npm_diff,n=5) %>% select(player:npm_diff)
+
+# The "Master Baiter" Award (sponsored by Bass Pro Shops & Kleenex)
+
+# most 3-point shooting fouls drawn (PBPStats.com)
+
+driver<- rsDriver(browser=c("firefox"))
+remDr <- driver[["client"]]
+remDr$open()
+remDr$navigate("https://www.pbpstats.com/totals/nba/player?Season=2021-22&SeasonType=Regular%20Season&Type=Player&StatType=Totals&Table=FTs")
+a<-remDr$findElement(using="xpath",value='//*[contains(concat( " ", @class, " " ), concat( " ", "footer__row-count__select", " " ))]')
+a$clickElement()
+Sys.sleep(3)
+a$clickElement()
+b<-remDr$findElement(using="xpath",value="//*/option[@value = '500']")
+b$clickElement()
+
+ft_source=read_html(remDr$getPageSource()[[1]]) %>% html_nodes("table") %>% .[[1]] %>% html_table() %>% 
+  select(-1) %>% rename_with(.fn=~word(.,1,sep="\n")) %>% slice(-1) %>% clean_names() %>% 
+  mutate(three_pt_shooting_fouls_drawn=x3pt_sfd+x3pt_and_1s)
+
+remDr$close()
+driver$server$stop()
+
+ft_source %>% slice_max(three_pt_shooting_fouls_drawn,n=5) %>% 
+  select(name,x3pt_sfd,x3pt_and_1s,three_pt_shooting_fouls_drawn)
 
 # The Stonks Award
 
