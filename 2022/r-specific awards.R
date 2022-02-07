@@ -4,17 +4,27 @@ library(polite)
 library(janitor)
 library(RSelenium)
 
-advanced=read_csv("Data/Advanced.csv") %>% filter(season==2022)
-per_game=read_csv("Data/Player Per Game.csv") %>% filter(season==2022)
+advanced=read_csv("Data/Advanced.csv") %>% filter(season==2022) %>%
+  #if player played for multiple teams in season, only take total row
+  mutate(tm=ifelse(tm=="TOT","1TOT",tm)) %>% 
+  group_by(player_id,season) %>% arrange(tm) %>% slice(1) %>% 
+  mutate(tm=ifelse(tm=="1TOT","TOT",tm)) %>% 
+  arrange(season,player) %>% ungroup()
+per_game=read_csv("Data/Player Per Game.csv") %>% filter(season==2022) %>%
+  #if player played for multiple teams in season, only take total row
+  mutate(tm=ifelse(tm=="TOT","1TOT",tm)) %>% 
+  group_by(player_id,season) %>% arrange(tm) %>% slice(1) %>% 
+  mutate(tm=ifelse(tm=="1TOT","TOT",tm)) %>% 
+  arrange(season,player) %>% ungroup()
 team_summaries=read_csv("Data/Team Summaries.csv") %>% filter(season==2022) %>% mutate(g_total=w+l) %>% 
-  rename(tm=abbreviation) %>% select(season,tm,g_total)
+  rename(tm=abbreviation) %>% select(season,tm,g_total) %>% head(.,-1) %>% add_row(season=2022,tm="TOT",g_total=mean(.$g_total))
 teams=advanced %>% filter(season==2022,tm != "TOT") %>% distinct(tm) %>% arrange(tm) %>% pull(tm)
 play_by_play=read_csv("Data/Player Play by Play.csv") %>% filter(season==2022)
 
 #The Real Sixth Man of the Year (presented by Brent Barry)*
 
 #sixth man winners if sixth to ninth on team in minutes played
-smoy_winners=advanced %>% filter(tm !="TOT") %>% left_join(.,per_game) %>%
+smoy_winners=advanced %>% left_join(.,per_game) %>%
   left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5) %>% 
   mutate(mp_per_game=mp/g,.after="mp") %>% arrange(desc(mp_per_game)) %>% 
   group_by(tm,season) %>% slice(6:9) %>% ungroup()
@@ -22,7 +32,7 @@ smoy_winners=advanced %>% filter(tm !="TOT") %>% left_join(.,per_game) %>%
 smoy_winners %>% slice_max(vorp,n=5) %>% 
   select(player,pos:experience,tm,g,gs,mp_per_game,vorp)
 
-smoy_winners_ppg=per_game %>% filter(tm !="TOT") %>% 
+smoy_winners_ppg=per_game %>%
   left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5) %>%
   filter(!is.na(mp_per_game)) %>% arrange(desc(mp_per_game)) %>% group_by(tm,season) %>% 
   slice(6:9) %>% ungroup()
@@ -30,10 +40,36 @@ smoy_winners_ppg=per_game %>% filter(tm !="TOT") %>%
 smoy_winners_ppg %>% slice_max(pts_per_game,n=5) %>% 
   select(player,pos:experience,tm,g,mp_per_game,pts_per_game)
 
+# The Deadshot Award (presented by Ray Allen/Reggie Miller)
+
+#best qualifying 3 point percentage (Basketball-Reference)
+
+per_game %>% left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7,x3p_per_game>=1) %>%
+  slice_max(x3p_percent,n=5) %>% select(player,x3p_per_game,x3p_percent)
+
+# The Stormtrooper Award
+
+#worst qualifying 2 point percentage (Basketball-Reference)
+
+per_game %>% left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7,fg_per_game>=300/82) %>%
+  slice_min(x2p_percent,n=5) %>% select(player,x2p_per_game,x2p_percent)
+
+# The "If He Dies, He Dies" Award (presented by Tom Thibodeau, sponsored by Ivan Drago)
+
+#most minutes played per game (Basketball-Reference) (credit to FurryCrew for the idea)
+
+per_game %>% left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7) %>%
+  slice_max(mp_per_game,n=5) %>% select(player,mp_per_game)
+
+#alternatively: most total minutes played (Basketball-Reference) (credit to FrankEMartindale for the idea)
+
+per_game %>% left_join(.,team_summaries) %>% mutate(g_percent=g/g_total,total_mp=g*mp_per_game) %>% 
+  filter(g_percent>=0.7) %>% slice_max(total_mp,n=5) %>% select(player,total_mp)
+
 # The Weakest Link award (sponsored by Jack Link's Beef Jerky, presented by the 2015 Atlanta Hawks Starting 5)*
 
 #best 5th starter (must have started 50% of a team's games) (credit to memeticengineering for the idea)
-best_worst_starter_winners=advanced %>% filter(tm !="TOT") %>% left_join(.,per_game) %>%
+best_worst_starter_winners=advanced %>% left_join(.,per_game) %>%
   left_join(.,team_summaries) %>% mutate(start_percent=gs/g_total) %>% 
   filter(start_percent>=0.5) %>% mutate(mp_per_game=mp/g,.after="mp") %>% 
   arrange(desc(mp_per_game)) %>% group_by(tm,season) %>% slice(1:5) %>% slice_min(vorp) %>% ungroup() 
@@ -44,7 +80,7 @@ best_worst_starter_winners %>% slice_max(vorp,n=5) %>% select(season,player,pos:
 
 # highest percentile rank within position in usage, descending VORP, descending TS% (credit to eewap for the idea)
 
-empty_stats_df=advanced %>% filter(tm !="TOT") %>% 
+empty_stats_df=advanced %>% 
   left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5) %>% group_by(pos) %>%
     mutate(ts_rank=percent_rank(desc(ts_percent)),
            usg_rank=percent_rank(usg_percent),
