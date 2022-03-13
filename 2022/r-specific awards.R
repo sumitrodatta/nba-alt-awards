@@ -1,8 +1,9 @@
 library(tidyverse)
+library(RSelenium)
 library(rvest)
 library(polite)
 library(janitor)
-library(RSelenium)
+library(ggdark)
 
 advanced=read_csv("Data/Advanced.csv") %>% filter(season==2022) %>%
   #if player played for multiple teams in season, only take total row
@@ -20,6 +21,9 @@ team_summaries=read_csv("Data/Team Summaries.csv") %>% filter(season==2022) %>% 
   rename(tm=abbreviation) %>% select(season,tm,g_total) %>% head(.,-1) %>% add_row(season=2022,tm="TOT",g_total=mean(.$g_total))
 teams=advanced %>% filter(season==2022,tm != "TOT") %>% distinct(tm) %>% arrange(tm) %>% pull(tm)
 play_by_play=read_csv("Data/Player Play by Play.csv") %>% filter(season==2022)
+
+bbref_bow=bow("https://www.basketball-reference.com/",
+              user_agent = "Sumitro Datta",force=TRUE,delay = 10)
 
 #The Real Sixth Man of the Year (presented by Brent Barry)*
 
@@ -71,7 +75,14 @@ best_worst_starter_candidates=advanced %>% left_join(.,per_game) %>%
 
 best_worst_starter_candidates %>% slice_max(vorp,n=5) %>% select(player,pos:experience,tm,g_total,gs,mp_per_game,vorp)
 
-# The Empty Calorie Stats Award (sponsored by Pop-Tarts)
+# The "This Game Has Always Been, And Will Always Be, About Buckets" Award (https://www.youtube.com/watch?v=-xYejfYxT4s)
+
+per_game %>% left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7) %>% 
+  mutate(pts_as_percent_of_other_stats=pts_per_game/(pts_per_game+trb_per_game+ast_per_game+stl_per_game+blk_per_game)) %>% 
+  slice_max(pts_as_percent_of_other_stats,n=5) %>% 
+  select(player,pts_per_game,trb_per_game,ast_per_game,stl_per_game,blk_per_game,pts_as_percent_of_other_stats)
+
+# The Empty Calorie Stats Award (sponsored by Pop-Tarts)*
 
 # highest percentile rank within position in usage, descending VORP, descending TS% (credit to eewap for the idea)
 
@@ -86,7 +97,7 @@ empty_stats_df=advanced %>%
 empty_stats_df %>% 
   slice_max(empty_stats,n=5) %>% select(player,pos:experience,ts_percent,usg_percent,vorp,ts_rank:empty_stats)
 
-# The "Can’t Win With These Cats" Award (sponsored by Scar from The Lion King, presented by Kevin Durant in a fake mustache)
+# The "Can’t Win With These Cats" Award (sponsored by Scar from The Lion King, presented by Kevin Durant in a fake mustache)*
 
 # highest difference in on/off splits between best & median player on team (credit to eewap for the idea)
 
@@ -103,6 +114,41 @@ on_off_diff=left_join(on_off_leaders,on_off_median) %>%  mutate(npm_diff=net_plu
 
 on_off_diff %>% slice_max(npm_diff,n=5) %>% select(player:npm_diff)
 
+player_heights=tibble()
+for (x in teams) {
+  session=nod(bbref_bow,path=paste0("teams/",x,"/2022.html"))
+  team_heights=scrape(session) %>% html_nodes(css="#all_roster") %>% 
+    html_table() %>% .[[1]] %>% 
+    clean_names() %>% select(player:wt)
+  player_heights=bind_rows(player_heights,team_heights)
+  print(x)
+}
+
+final_heights=player_heights %>% mutate(player=str_trim(word(player,sep="\\(TW\\)"))) %>%
+  separate(ht,into=c("ht_ft","ht_in"),convert=TRUE) %>% mutate(full_in_ht=12*ht_ft+ht_in) %>%
+  mutate(player=case_when(str_detect(player,"Walker IV")~"Lonnie Walker",
+                          str_detect(player,"Otto")~"Otto Porter",
+                          str_detect(player,"Sviato")~"Svi Mykhailiuk",
+                          str_detect(player,"Clax")~"Nic Claxton",
+                          TRUE~player))
+
+pos_percents_w_heights=play_by_play %>% select(seas_id:player,pos,tm:c_percent) %>% filter(tm!="TOT") %>% 
+  replace_na(list(pg_percent=0,sg_percent=0,sf_percent=0,pf_percent=0,c_percent=0)) %>%
+  mutate(guard_percent=pg_percent+sg_percent,
+         small_wing_percent=sg_percent+sf_percent,
+         big_wing_percent=sf_percent+pf_percent,
+         big_percent=pf_percent+c_percent) %>% pivot_longer(cols=guard_percent:big_percent) %>%
+    group_by(seas_id) %>% slice_max(value,n=1) %>% ungroup() %>% 
+    left_join(.,final_heights %>% select(-pos)) %>% 
+  mutate(name=case_when(full_in_ht>=84~"big_percent", #evan mobley classified as big_wing
+                        full_in_ht<=72~"guard_percent", #markus howard classified as small_wing
+                        TRUE~name))
+
+pos_percents_w_heights %>% filter(mp>50) %>% ggplot(aes(x=full_in_ht,fill=name)) + 
+  geom_bar() + dark_theme_grey()
+
+write_csv(pos_percents_w_heights,"Player Positions.csv")
+
 # The "Master Baiter" Award (sponsored by Bass Pro Shops & Kleenex)
 
 # most 3-point shooting fouls drawn (PBPStats.com)
@@ -111,7 +157,7 @@ driver<- rsDriver(browser=c("firefox"))
 remDr <- driver[["client"]]
 remDr$open()
 remDr$navigate("https://www.pbpstats.com/totals/nba/player?Season=2021-22&SeasonType=Regular%20Season&Type=Player&StatType=Totals&Table=FTs")
-Sys.sleep(10)
+Sys.sleep(20)
 a<-remDr$findElement(using="xpath",value='//*[contains(concat( " ", @class, " " ), concat( " ", "footer__row-count__select", " " ))]')
 a$clickElement()
 Sys.sleep(10)
@@ -132,8 +178,6 @@ ft_source %>% slice_max(three_pt_shooting_fouls_drawn,n=5) %>%
 # The Stonks Award
 
 #contract overperformance by fewest contract $ per Win Share (credit to memeticengineering for the idea)
-bbref_bow=bow("https://www.basketball-reference.com/",
-              user_agent = "Sumitro Datta",force=TRUE,delay = 10)
 contracts=tibble()
 for (x in teams) {
   session=nod(bbref_bow,path=paste0("contracts/",x,".html"))
@@ -145,9 +189,18 @@ for (x in teams) {
   print(x)
 }
 
-salary_performance=left_join(contracts,advanced %>% filter(season==2022)) %>% select(player,experience,age,salary,vorp) %>% 
+salary_performance=left_join(contracts,read_csv("Data/Advanced.csv") %>% filter(season==2022)) %>% 
+  select(player,experience,age,salary,vorp) %>% 
   mutate(vorp_per_million=vorp/salary*1000000)
 #remove any player with <=4 years of experience (rookie contract)
 salary_performance %>% filter(experience > 4) %>% arrange(desc(vorp_per_million))
+#remove minimum salaried players
+salary_performance %>% 
+  group_by(age) %>% mutate(min_salary=(salary==min(salary))) %>% ungroup() %>% 
+  filter(min_salary==FALSE) %>%
+  filter(experience > 4) %>% arrange(desc(vorp_per_million))
+#remove players whose salary is less than 5% of cap
+salary_performance %>% mutate(percent_of_cap=salary/112414000) %>% filter(percent_of_cap>0.05) %>%
+  filter(experience > 4) %>% arrange(desc(vorp_per_million))
 
 options(scipen=999)
