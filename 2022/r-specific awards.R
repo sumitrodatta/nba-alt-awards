@@ -43,14 +43,14 @@ smoy_candidates %>% slice_max(pts_per_game,n=5) %>%
 
 #best qualifying 3 point percentage (Basketball-Reference)
 
-per_game %>% left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7,x3p_per_game>=1) %>%
+per_game %>% left_join(.,team_summaries) %>% filter(x3p_per_game*g>82,x3p_per_game>=1) %>%
   slice_max(x3p_percent,n=5) %>% select(player,x3p_per_game,x3p_percent)
 
 # The Stormtrooper Award
 
 #worst qualifying 2 point percentage (Basketball-Reference)
 
-per_game %>% left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7,fg_per_game>=300/82) %>%
+per_game %>% left_join(.,team_summaries) %>% filter(fg_per_game*g>=300,fg_per_game>=300/82) %>%
   slice_min(x2p_percent,n=5) %>% select(player,x2p_per_game,x2p_percent)
 
 # The "If He Dies, He Dies" Award (presented by Tom Thibodeau, sponsored by Ivan Drago)
@@ -132,22 +132,26 @@ final_heights=player_heights %>% mutate(player=str_trim(word(player,sep="\\(TW\\
                           str_detect(player,"Clax")~"Nic Claxton",
                           TRUE~player))
 
-pos_percents_w_heights=play_by_play %>% select(seas_id:player,pos,tm:c_percent) %>% filter(tm!="TOT") %>% 
+pos_percents_w_heights=play_by_play %>% select(seas_id:player,pos,tm:c_percent) %>% 
+  filter(tm!="TOT") %>% 
   replace_na(list(pg_percent=0,sg_percent=0,sf_percent=0,pf_percent=0,c_percent=0)) %>%
   mutate(guard_percent=pg_percent+sg_percent,
-         small_wing_percent=sg_percent+sf_percent,
-         big_wing_percent=sf_percent+pf_percent,
-         big_percent=pf_percent+c_percent) %>% pivot_longer(cols=guard_percent:big_percent) %>%
-    group_by(seas_id) %>% slice_max(value,n=1) %>% ungroup() %>% 
-    left_join(.,final_heights %>% select(-pos)) %>% 
-  mutate(name=case_when(full_in_ht>=84~"big_percent", #evan mobley classified as big_wing
+         wing_small_percent=sg_percent+sf_percent,
+         wing_big_percent=sf_percent+pf_percent,
+         big_percent=pf_percent+c_percent) %>% 
+  pivot_longer(cols=guard_percent:big_percent,names_to="position") %>%
+  group_by(seas_id) %>% slice_max(value,n=1) %>% ungroup() %>% 
+  left_join(.,final_heights %>% select(-pos)) %>% 
+  mutate(position=case_when(full_in_ht>=84~"big_percent", #evan mobley classified as big_wing
                         full_in_ht<=72~"guard_percent", #markus howard classified as small_wing
-                        TRUE~name))
+                        TRUE~position)) %>%
+  #combine wing sizes into one
+    mutate(position_2=word(position,sep="_"))
 
-pos_percents_w_heights %>% filter(mp>50) %>% ggplot(aes(x=full_in_ht,fill=name)) + 
+pos_percents_w_heights %>% filter(mp>50) %>% ggplot(aes(x=full_in_ht,fill=position)) + 
   geom_bar() + dark_theme_grey()
 
-write_csv(pos_percents_w_heights,"Player Positions.csv")
+write_csv(pos_percents_w_heights,"Data/Player Positions.csv")
 
 # The "Master Baiter" Award (sponsored by Bass Pro Shops & Kleenex)
 
