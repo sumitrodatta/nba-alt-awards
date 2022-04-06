@@ -77,10 +77,17 @@ best_worst_starter_candidates %>% slice_max(vorp,n=5) %>% select(player,pos:expe
 
 # The "This Game Has Always Been, And Will Always Be, About Buckets" Award (https://www.youtube.com/watch?v=-xYejfYxT4s)
 
-per_game %>% left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7) %>% 
-  mutate(pts_as_percent_of_other_stats=pts_per_game/(pts_per_game+trb_per_game+ast_per_game+stl_per_game+blk_per_game)) %>% 
+# highest points as percentage of counting stats (rebounds, assists, steals, blocks)
+
+pts_as_percent_counting_stats=per_game %>% left_join(.,team_summaries) %>% 
+  mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7) %>% 
+  mutate(pts_as_percent_of_other_stats=pts_per_game/(pts_per_game+trb_per_game+ast_per_game+stl_per_game+blk_per_game))
+
+pts_as_percent_counting_stats %>% 
   slice_max(pts_as_percent_of_other_stats,n=5) %>% 
   select(player,pts_per_game,trb_per_game,ast_per_game,stl_per_game,blk_per_game,pts_as_percent_of_other_stats)
+
+write_csv(pts_as_percent_counting_stats,"Output Data/Points as Percent of Counting Stats.csv")
 
 # The Empty Calorie Stats Award (sponsored by Pop-Tarts)*
 
@@ -96,6 +103,8 @@ empty_stats_df=advanced %>%
 
 empty_stats_df %>% 
   slice_max(empty_stats,n=5) %>% select(player,pos:experience,ts_percent,usg_percent,vorp,ts_rank:empty_stats)
+
+write_csv(empty_stats_df,"Output Data/Empty Stats.csv")
 
 # The "Can’t Win With These Cats" Award (sponsored by Scar from The Lion King, presented by Kevin Durant in a fake mustache)*
 
@@ -113,6 +122,8 @@ on_off_median=pbp_filtered %>% group_by(tm) %>% arrange(desc(net_plus_minus_per_
 on_off_diff=left_join(on_off_leaders,on_off_median) %>%  mutate(npm_diff=net_plus_minus_per_100_poss-median)
 
 on_off_diff %>% slice_max(npm_diff,n=5) %>% select(player:npm_diff)
+
+write_csv(on_off_diff,"Output Data/On-Off Difference between Best & Median Player.csv")
 
 player_heights=tibble()
 for (x in teams) {
@@ -151,7 +162,7 @@ pos_percents_w_heights=play_by_play %>% select(seas_id:player,pos,tm:c_percent) 
 pos_percents_w_heights %>% filter(mp>50) %>% ggplot(aes(x=full_in_ht,fill=position)) + 
   geom_bar() + dark_theme_grey()
 
-write_csv(pos_percents_w_heights,"Data/Player Positions.csv")
+write_csv(pos_percents_w_heights,"Output Data/Player Positions.csv")
 
 # The "Master Baiter" Award (sponsored by Bass Pro Shops & Kleenex)
 
@@ -198,11 +209,6 @@ salary_performance=left_join(contracts,read_csv("Data/Advanced.csv") %>% filter(
   mutate(vorp_per_million=vorp/salary*1000000)
 #remove any player with <=4 years of experience (rookie contract)
 salary_performance %>% filter(experience > 4) %>% arrange(desc(vorp_per_million))
-#remove minimum salaried players
-salary_performance %>% 
-  group_by(age) %>% mutate(min_salary=(salary==min(salary))) %>% ungroup() %>% 
-  filter(min_salary==FALSE) %>%
-  filter(experience > 4) %>% arrange(desc(vorp_per_million))
 #remove players whose salary is less than 5% of cap
 salary_performance %>% mutate(percent_of_cap=salary/112414000) %>% filter(percent_of_cap>0.05) %>%
   filter(experience > 4) %>% arrange(desc(vorp_per_million))
