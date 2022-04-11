@@ -87,7 +87,9 @@ pts_as_percent_counting_stats %>%
   slice_max(pts_as_percent_of_other_stats,n=5) %>% 
   select(player,pts_per_game,trb_per_game,ast_per_game,stl_per_game,blk_per_game,pts_as_percent_of_other_stats)
 
-write_csv(pts_as_percent_counting_stats,"Output Data/Points as Percent of Counting Stats.csv")
+write_csv(pts_as_percent_counting_stats %>% 
+            select(player,pts_per_game,trb_per_game,ast_per_game,stl_per_game,blk_per_game,pts_as_percent_of_other_stats),
+          "Output Data/Points as Percent of Counting Stats.csv")
 
 # The Empty Calorie Stats Award (sponsored by Pop-Tarts)*
 
@@ -104,7 +106,8 @@ empty_stats_df=advanced %>%
 empty_stats_df %>% 
   slice_max(empty_stats,n=5) %>% select(player,pos:experience,ts_percent,usg_percent,vorp,ts_rank:empty_stats)
 
-write_csv(empty_stats_df,"Output Data/Empty Stats.csv")
+write_csv(empty_stats_df %>% 
+            select(player,pos:experience,ts_percent,usg_percent,vorp,ts_rank:empty_stats),"Output Data/Empty Stats.csv")
 
 # The "Can’t Win With These Cats" Award (sponsored by Scar from The Lion King, presented by Kevin Durant in a fake mustache)*
 
@@ -123,7 +126,7 @@ on_off_diff=left_join(on_off_leaders,on_off_median) %>%  mutate(npm_diff=net_plu
 
 on_off_diff %>% slice_max(npm_diff,n=5) %>% select(player:npm_diff)
 
-write_csv(on_off_diff,"Output Data/On-Off Difference between Best & Median Player.csv")
+write_csv(on_off_diff %>% select(player:npm_diff),"Output Data/On-Off Difference between Best & Median Player.csv")
 
 player_heights=tibble()
 for (x in teams) {
@@ -192,7 +195,7 @@ ft_source %>% slice_max(three_pt_shooting_fouls_drawn,n=5) %>%
 
 # The Stonks Award
 
-#contract overperformance by fewest contract $ per Win Share (credit to memeticengineering for the idea)
+#contract overperformance by fewest contract $ per 1 VORP (credit to memeticengineering for the idea)
 contracts=tibble()
 for (x in teams) {
   session=nod(bbref_bow,path=paste0("contracts/",x,".html"))
@@ -205,12 +208,12 @@ for (x in teams) {
 }
 
 salary_performance=left_join(contracts,read_csv("Data/Advanced.csv") %>% filter(season==2022)) %>% 
-  select(player,experience,age,salary,vorp) %>% 
-  mutate(vorp_per_million=vorp/salary*1000000)
-#remove any player with <=4 years of experience (rookie contract)
-salary_performance %>% filter(experience > 4) %>% arrange(desc(vorp_per_million))
+  select(player,tm,experience,age,salary,vorp) %>% 
+  mutate(vorp_per_million=vorp/salary*1000000) %>% 
+  mutate(percent_of_cap=salary/112414000) %>% filter(!is.na(vorp))
+#remove any player with <=4 years of experience (rookie contract), players w/lower salary than min (10-days)
+salary_performance %>% filter(experience > 4,salary>925258) %>% arrange(desc(vorp_per_million))
 #remove players whose salary is less than 5% of cap
-salary_performance %>% mutate(percent_of_cap=salary/112414000) %>% filter(percent_of_cap>0.05) %>%
-  filter(experience > 4) %>% arrange(desc(vorp_per_million))
+salary_performance %>% filter(experience > 4,percent_of_cap>0.05) %>% arrange(desc(vorp_per_million))
 
-options(scipen=999)
+write_csv(salary_performance,"Output Data/Salary Overperformance.csv")
