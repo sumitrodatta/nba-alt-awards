@@ -152,34 +152,38 @@ write_csv(empty_stats_df %>%
 
 # The "Can’t Win With These Cats" Award (sponsored by Scar from The Lion King, presented by Kevin Durant in a fake mustache)*
 
-# highest difference in on/off splits between best & median player on team (credit to eewap for the idea)
+# highest difference in on/off splits in weighted average with and without best (credit to eewap for the idea and ToparBull for the change from median)
 
 pbp_filtered=play_by_play %>% filter(tm !="TOT") %>% 
-  left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5,mp/g>=10)
+  left_join(.,team_summaries) %>% mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5,mp/g>=10) %>%
+  group_by(tm) %>% mutate(team_avg_weighted_npm=sum(net_plus_minus_per_100_poss*mp/g)/sum(mp/g)) %>% ungroup()
 
 on_off_leaders=pbp_filtered %>% group_by(tm) %>%
-  slice_max(net_plus_minus_per_100_poss) %>% ungroup() %>% select(seas_id:player,tm:mp,net_plus_minus_per_100_poss,g_percent)
+  slice_max(net_plus_minus_per_100_poss) %>% ungroup() %>% select(seas_id:player,tm:mp,net_plus_minus_per_100_poss,g_percent,team_avg_weighted_npm)
 
-on_off_median=pbp_filtered %>% group_by(tm) %>% arrange(desc(net_plus_minus_per_100_poss)) %>%
-  slice(-1) %>% summarize(median=median(net_plus_minus_per_100_poss))
+on_off_avg_wo_leader=pbp_filtered %>% group_by(tm) %>% arrange(desc(net_plus_minus_per_100_poss)) %>%
+  slice(-1) %>% summarize(avg_wo_leader=sum(net_plus_minus_per_100_poss*mp/g)/sum(mp/g))
 
-on_off_diff=left_join(on_off_leaders,on_off_median) %>%  mutate(npm_diff=net_plus_minus_per_100_poss-median)
+on_off_diff=left_join(on_off_leaders,on_off_avg_wo_leader) %>%  mutate(npm_diff=team_avg_weighted_npm-avg_wo_leader)
 
 on_off_diff %>% slice_max(npm_diff,n=5) %>% select(player:npm_diff)
 
 # The "Anchors Aweigh" Award (presented by Ron Burgundy)*
 
-# biggest difference in on/off splits between worst & median player on team
+# biggest difference in on/off splits in weighted average with and without worst
 
-on_off_trailers=pbp_filtered %>% group_by(tm,season) %>%
-  slice_min(net_plus_minus_per_100_poss) %>% ungroup() %>% select(seas_id:player,tm:mp,net_plus_minus_per_100_poss,g_percent)
+on_off_trailers=pbp_filtered %>% group_by(tm) %>%
+  slice_min(net_plus_minus_per_100_poss) %>% ungroup() %>% select(seas_id:player,tm:mp,net_plus_minus_per_100_poss,g_percent,team_avg_weighted_npm)
 
-on_off_diff_trail=left_join(on_off_trailers,on_off_median) %>%  mutate(npm_diff=net_plus_minus_per_100_poss-median)
+on_off_avg_wo_trailer=pbp_filtered %>% group_by(tm) %>% arrange(net_plus_minus_per_100_poss) %>%
+  slice(-1) %>% summarize(avg_wo_trailer=sum(net_plus_minus_per_100_poss*mp)/sum(mp))
 
-on_off_diff_trail %>% slice_min(npm_diff,n=5) %>% select(season,player:npm_diff)
+on_off_diff_trail=left_join(on_off_trailers,on_off_avg_wo_trailer) %>%  mutate(npm_diff=team_avg_weighted_npm-avg_wo_trailer)
 
-write_csv(bind_rows(on_off_diff,on_off_diff_trail) %>% 
-            select(season,player:npm_diff),"Output Data/On-Off Difference between Extreme & Median Player.csv")
+on_off_diff_trail %>% slice_min(npm_diff,n=5) %>% select(player:npm_diff)
+
+write_csv(full_join(on_off_diff,on_off_diff_trail) %>% 
+            select(season,player:avg_wo_trailer),"Output Data/On-Off Difference With & Without Extreme Player.csv")
 
 player_heights=tibble()
 for (x in teams) {
@@ -233,7 +237,7 @@ a<-remDr$findElement(using="xpath",value='//*[contains(concat( " ", @class, " " 
 a$clickElement()
 Sys.sleep(10)
 a$clickElement()
-b<-remDr$findElement(using="xpath",value="//*/option[@value = '500']") #unable to locate element, to be changed
+b<-remDr$findElement(using="xpath",value="//*/option[@value = '489']") #unable to locate element, to be changed
 b$clickElement()
 
 ft_source=read_html(remDr$getPageSource()[[1]]) %>% html_nodes("table") %>% .[[1]] %>% html_table() %>% 
