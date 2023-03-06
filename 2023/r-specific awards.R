@@ -24,6 +24,8 @@ totals=read_csv("Data/Player Totals.csv") %>% filter(season==2023) %>%
   mutate(tm=ifelse(tm=="1TOT","TOT",tm)) %>% 
   arrange(season,player) %>% ungroup()
 
+num_players_season=nrow(advanced)
+
 team_summaries=read_csv("Data/Team Summaries.csv") %>% filter(season==2023) %>% mutate(g_total=w+l) %>% 
   rename(tm=abbreviation) %>% select(season,tm,g_total) %>% head(.,-1) %>% add_row(season=2023,tm="TOT",g_total=mean(.$g_total))
 teams=advanced %>% filter(season==2023,tm != "TOT") %>% distinct(tm) %>% arrange(tm) %>% pull(tm)
@@ -187,7 +189,7 @@ write_csv(full_join(on_off_diff,on_off_diff_trail) %>%
 
 player_heights=tibble()
 for (x in teams) {
-  session=nod(bbref_bow,path=paste0("teams/",x,"/2022.html"))
+  session=nod(bbref_bow,path=paste0("teams/",x,"/2023.html"))
   team_heights=scrape(session) %>% html_nodes(css="#all_roster") %>% 
     html_table() %>% .[[1]] %>% 
     clean_names() %>% select(player:wt)
@@ -196,12 +198,7 @@ for (x in teams) {
 }
 
 final_heights=player_heights %>% mutate(player=str_trim(word(player,sep="\\(TW\\)"))) %>%
-  separate(ht,into=c("ht_ft","ht_in"),convert=TRUE) %>% mutate(full_in_ht=12*ht_ft+ht_in) %>%
-  mutate(player=case_when(str_detect(player,"Walker IV")~"Lonnie Walker",
-                          str_detect(player,"Otto")~"Otto Porter",
-                          str_detect(player,"Sviato")~"Svi Mykhailiuk",
-                          str_detect(player,"Clax")~"Nic Claxton",
-                          TRUE~player))
+  separate(ht,into=c("ht_ft","ht_in"),convert=TRUE) %>% mutate(full_in_ht=12*ht_ft+ht_in)
 
 pos_percents_w_heights=play_by_play %>% select(seas_id:player,pos,tm:c_percent) %>% 
   filter(tm!="TOT") %>% 
@@ -217,7 +214,9 @@ pos_percents_w_heights=play_by_play %>% select(seas_id:player,pos,tm:c_percent) 
                         full_in_ht<=72~"guard_percent", #markus howard classified as small_wing
                         TRUE~position)) %>%
   #combine wing sizes into one
-    mutate(position_2=word(position,sep="_"))
+    mutate(position_2=word(position,sep="_")) %>%
+  left_join(.,read_csv("Data/Advanced.csv") %>% 
+              filter(season==2023, tm != "TOT") %>% select(seas_id:player,ows:vorp))
 
 pos_percents_w_heights %>% filter(mp>50) %>% ggplot(aes(x=full_in_ht,fill=position)) + 
   geom_bar() + dark_theme_grey()
@@ -237,7 +236,7 @@ a<-remDr$findElement(using="xpath",value='//*[contains(concat( " ", @class, " " 
 a$clickElement()
 Sys.sleep(10)
 a$clickElement()
-b<-remDr$findElement(using="xpath",value="//*/option[@value = '489']") #unable to locate element, to be changed
+b<-remDr$findElement(using="xpath",value=paste0("//*/option[@value = '",num_players_season,"']")) #number of players in the season
 b$clickElement()
 
 ft_source=read_html(remDr$getPageSource()[[1]]) %>% html_nodes("table") %>% .[[1]] %>% html_table() %>% 
