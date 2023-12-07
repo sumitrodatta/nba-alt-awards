@@ -10,15 +10,14 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31144,2024,3982,Alec Burks,SG,DET,13,258,0,24,68,8,0,wing_small_percent,92,6,6,214,78,wing,0.5,0.1,0.6,0.107,1.2,-1.2,0,0.1,TRUE
 31145,2024,4806,Aleksej Pokusevski,PF,OKC,6,34,0,0,0,64,36,big_percent,100,7,0,190,84,big,-0.1,0,-0.1,-0.088,-8.7,-1.5,-10.2,-0.1,FALSE
 31146,2024,4465,Alex Caruso,SG,CHI,17,409,10,89,2,0,0,guard_percent,99,6,5,186,77,guard,0.8,0.5,1.2,0.146,1.7,2.4,4.1,0.6,TRUE
-31147,2024,5109,Alex Fudge,SF,LAL,4,14,0,0,0,100,0,wing_big_percent,100,6,8,200,80,wing,-0.1,0,-0.1,-0.219,-9.9,-8.3,-18.2,-0.1,FALSE
 31147,2024,5109,Alex Fudge,SF,LAL,4,14,0,0,0,100,0,big_percent,100,6,8,200,80,big,-0.1,0,-0.1,-0.219,-9.9,-8.3,-18.2,-0.1,FALSE
+31147,2024,5109,Alex Fudge,SF,LAL,4,14,0,0,0,100,0,wing_big_percent,100,6,8,200,80,wing,-0.1,0,-0.1,-0.219,-9.9,-8.3,-18.2,-0.1,FALSE
 31148,2024,4142,Alex Len,C,SAC,6,41,0,0,0,0,100,big_percent,100,7,0,250,84,big,0.1,0.1,0.2,0.241,3.8,3.1,6.9,0.1,FALSE
 31149,2024,4904,Alperen Şengün,C,HOU,16,522,0,0,0,0,100,big_percent,100,6,11,235,83,big,1.2,0.9,2,0.184,3.9,2,6,1,TRUE
 31150,2024,5110,Amari Bailey,PG,CHO,1,3,100,0,0,0,0,guard_percent,100,6,5,185,77,guard,0,0,0,-0.049,7.6,-10.8,-3.2,0,FALSE
 31151,2024,5111,Amen Thompson,SF,HOU,4,67,0,3,78,19,0,wing_big_percent,97,6,7,209,79,wing,-0.1,0.1,0,-0.021,-5.6,0,-5.6,-0.1,FALSE
 31152,2024,4690,Amir Coffey,SF,LAC,10,58,0,9,82,9,0,wing_small_percent,91,6,7,210,79,wing,0,0,0,0.011,-6.1,-1.3,-7.4,-0.1,FALSE
-31152,2024,4690,Amir Coffey,SF,LAC,10,58,0,9,82,9,0,wing_big_percent,91,6,7,210,79,wing,0,0,0,0.011,-6.1,-1.3,-7.4,-0.1,FALSE
-31153,2024,4064,Andre Drummond,C,CHI,20,262,0,0,0,0,100,big_percent,100,6,11,279,83,big,0.3,0.5,0.8,0.148,-0.6,0.1,-0.6,0.1,TRUE
+31153,2024,4064,Andre Drummond,C,CHI,20,262,0,0,0,0,100,big_percent,100,6,11,279,83,big,0.3,0.5,0.8,0.148,-0.6,0.1,-0.6,0.1,FALSE
 31154,2024,5112,Andre Jackson Jr.,SG,MIL,15,129,14,41,44,2,0,wing_small_percent,85,6,6,210,78,wing,0.2,0.1,0.3,0.103,-2.3,0,-2.3,0,FALSE
 31155,2024,5029,Andrew Nembhard,PG,IND,14,266,55,44,1,0,0,guard_percent,99,6,5,193,77,guard,0.1,0,0.1,0.024,-2.2,-1.5,-3.6,-0.1,FALSE
 31156,2024,4223,Andrew Wiggins,SF,GSW,18,490,0,0,58,42,0,wing_big_percent,100,6,7,197,79,wing,-0.4,0.3,-0.2,-0.015,-4,-2.5,-6.4,-0.6,FALSE
@@ -37,7 +36,7 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31169,2024,5030,Bennedict Mathurin,SF,IND,17,418,0,2,63,35,0,wing_big_percent,98,6,6,210,78,wing,0.2,0,0.2,0.026,-1.4,-3.1,-4.5,-0.3,FALSE
 31170,2024,5116,Bilal Coulibaly,SF,WAS,17,442,0,42,56,1,0,wing_small_percent,98,6,6,195,78,wing,0,0.2,0.2,0.019,-2.8,-0.6,-3.4,-0.2,FALSE
 31171,2024,3984,Bismack Biyombo,C,MEM,12,315,0,0,0,62,38,big_percent,100,6,8,255,80,big,0.5,0.4,0.9,0.134,-2.4,0.9,-1.4,0,FALSE
-31172,2024,5031,Blake Wesley,SG,SAS,4,21,14,86,0,0,0,guard_percent,100,6,5,185,77,guard,0,0,0,-0.077,-5.8,-2.8,-8.6,0,TRUE
+31172,2024,5031,Blake Wesley,SG,SAS,4,21,14,86,0,0,0,guard_percent,100,6,5,185,77,guard,0,0,0,-0.077,-5.8,-2.8,-8.6,0,FALSE
 31173,2024,4306,Boban Marjanović,C,HOU,3,20,0,0,0,0,100,big_percent,100,7,4,290,88,big,0,0,0.1,0.209,1.8,1.8,3.6,0,FALSE
 31174,2024,4307,Bobby Portis,PF,MIL,19,456,0,0,3,81,16,big_percent,97,6,10,250,82,big,0.2,0.5,0.7,0.077,-1.9,-0.6,-2.5,-0.1,FALSE
 31175,2024,4475,Bogdan Bogdanović,SG,ATL,18,479,0,87,13,0,0,wing_small_percent,100,6,5,220,77,wing,0.8,0.3,1.1,0.109,2.1,0,2.1,0.5,TRUE
@@ -48,7 +47,7 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31180,2024,4379,Brandon Ingram,SF,NOP,16,542,2,47,44,7,0,wing_small_percent,91,6,8,190,80,wing,0.6,0.5,1.1,0.093,1.9,-1,0.9,0.4,TRUE
 31181,2024,5118,Brandon Miller,SF,CHO,15,461,0,0,64,36,0,wing_big_percent,100,6,9,201,81,wing,0.4,0,0.4,0.04,-1.4,-1.9,-3.3,-0.1,FALSE
 31182,2024,4911,Braxton Key,SF,DEN,6,15,0,0,37,56,7,wing_big_percent,93,6,8,230,80,wing,0,0,0,0.002,-6.1,0.1,-6,0,FALSE
-31183,2024,5119,Brice Sensabaugh,SF,UTA,1,2,0,100,0,0,0,guard_percent,100,6,6,235,78,guard,0,0,0,-0.656,-15.3,-14.6,-29.9,0,TRUE
+31183,2024,5119,Brice Sensabaugh,SF,UTA,1,2,0,100,0,0,0,guard_percent,100,6,6,235,78,guard,0,0,0,-0.656,-15.3,-14.6,-29.9,0,FALSE
 31183,2024,5119,Brice Sensabaugh,SF,UTA,1,2,0,100,0,0,0,wing_small_percent,100,6,6,235,78,wing,0,0,0,-0.656,-15.3,-14.6,-29.9,0,FALSE
 31184,2024,3801,Brook Lopez,C,MIL,19,562,0,0,0,0,100,big_percent,100,7,1,282,85,big,1,0.7,1.6,0.139,1.2,1.1,2.2,0.6,FALSE
 31185,2024,4594,Bruce Brown,SG,IND,17,536,0,89,11,0,0,wing_small_percent,100,6,4,202,76,wing,0.5,0.1,0.6,0.055,-1.5,-1,-2.5,-0.1,FALSE
@@ -81,7 +80,7 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31212,2024,4703,Coby White,PG,CHI,20,656,88,12,0,0,0,guard_percent,100,6,5,195,77,guard,0.2,0.3,0.5,0.04,-1.4,-1,-2.3,-0.1,FALSE
 31213,2024,4155,Cody Zeller,C,NOP,15,142,0,0,0,0,100,big_percent,100,6,11,240,83,big,-0.1,0.2,0.1,0.035,-4.9,0,-4.9,-0.1,FALSE
 31214,2024,5124,Colby Jones,SG,SAC,9,70,2,77,21,0,0,wing_small_percent,98,6,6,205,78,wing,-0.1,0.1,0,-0.002,-4.4,-1.7,-6.1,-0.1,FALSE
-31215,2024,4819,Cole Anthony,PG,ORL,18,467,100,0,0,0,0,guard_percent,100,6,2,185,74,guard,0.7,0.7,1.5,0.152,0.8,0.4,1.2,0.4,TRUE
+31215,2024,4819,Cole Anthony,PG,ORL,18,467,100,0,0,0,0,guard_percent,100,6,2,185,74,guard,0.7,0.7,1.5,0.152,0.8,0.4,1.2,0.4,FALSE
 31216,2024,5038,Cole Swider,SF,MIA,3,29,0,0,72,29,0,wing_big_percent,101,6,9,220,81,wing,0,0,0.1,0.083,4.5,1.3,5.8,0.1,FALSE
 31217,2024,5125,Colin Castleton,C,LAL,3,23,0,0,0,0,100,big_percent,100,6,11,250,83,big,0.1,0,0.1,0.146,-3.6,-3.1,-6.7,0,FALSE
 31218,2024,5126,Collin Gillespie,PG,DEN,10,81,100,0,0,0,0,guard_percent,100,6,1,195,73,guard,0,0.1,0.1,0.033,-6.2,0.9,-5.3,-0.1,FALSE
@@ -98,14 +97,13 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31229,2024,4387,Damian Jones,C,CLE,10,51,0,0,0,0,100,big_percent,100,6,11,245,83,big,0,0.1,0,0.034,-5.1,-0.2,-5.3,0,FALSE
 31230,2024,4077,Damian Lillard,PG,MIL,17,592,100,0,0,0,0,guard_percent,100,6,2,195,74,guard,1.8,0.4,2.2,0.175,4.5,-1.8,2.7,0.7,TRUE
 31231,2024,4705,Daniel Gafford,C,WAS,16,400,0,0,0,0,100,big_percent,100,6,10,234,82,big,0.9,0.3,1.2,0.142,-1.4,0.3,-1,0.1,FALSE
-31233,2024,4487,Daniel Theis,C,IND,1,8,0,0,0,100,0,wing_big_percent,100,6,8,245,80,wing,0,0,0,-0.276,-12.9,-7.9,-20.8,0,FALSE
 31233,2024,4487,Daniel Theis,C,IND,1,8,0,0,0,100,0,big_percent,100,6,8,245,80,big,0,0,0,-0.276,-12.9,-7.9,-20.8,0,FALSE
+31233,2024,4487,Daniel Theis,C,IND,1,8,0,0,0,100,0,wing_big_percent,100,6,8,245,80,wing,0,0,0,-0.276,-12.9,-7.9,-20.8,0,FALSE
 31234,2024,4487,Daniel Theis,C,LAC,8,133,0,0,0,0,100,big_percent,100,6,8,245,80,big,0.1,0.2,0.3,0.102,-3,-0.2,-3.2,0,FALSE
 31235,2024,3807,Danilo Gallinari,PF,WAS,16,246,0,0,0,1,99,big_percent,100,6,10,233,82,big,0.5,0,0.5,0.097,0.6,-1.9,-1.3,0,FALSE
 31236,2024,3867,Danny Green,SG,PHI,2,18,0,50,50,0,0,wing_small_percent,100,NA,NA,NA,NA,wing,0,0,0,-0.032,-7,0.5,-6.4,0,FALSE
 31237,2024,4233,Dante Exum,PG,DAL,16,170,100,0,0,0,0,guard_percent,100,6,5,214,77,guard,0.3,0.1,0.4,0.125,-0.2,-0.1,-0.3,0.1,FALSE
 31238,2024,4389,Danuel House Jr.,SF,PHI,10,127,0,11,77,11,0,wing_small_percent,88,6,6,220,78,wing,-0.1,0.1,0,0.017,-4,-0.7,-4.6,-0.1,FALSE
-31238,2024,4389,Danuel House Jr.,SF,PHI,10,127,0,11,77,11,0,wing_big_percent,88,6,6,220,78,wing,-0.1,0.1,0,0.017,-4,-0.7,-4.6,-0.1,FALSE
 31239,2024,4390,Dario Šarić,C,GSW,19,413,0,0,0,0,100,big_percent,100,6,10,225,82,big,0.9,0.5,1.4,0.163,2.4,0.9,3.3,0.6,TRUE
 31240,2024,5129,Dariq Whitehead,SF,BRK,1,3,0,100,0,0,0,guard_percent,100,6,7,220,79,guard,0,0,0,0.158,4.5,6.7,11.2,0,FALSE
 31240,2024,5129,Dariq Whitehead,SF,BRK,1,3,0,100,0,0,0,wing_small_percent,100,6,7,220,79,wing,0,0,0,0.158,4.5,6.7,11.2,0,FALSE
@@ -115,7 +113,7 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31244,2024,4927,Day'Ron Sharpe,C,BRK,18,275,0,0,0,0,100,big_percent,100,6,11,265,83,big,0.4,0.4,0.8,0.136,-1.9,-0.6,-2.4,0,FALSE
 31245,2024,4489,De'Aaron Fox,PG,SAC,12,435,100,0,0,0,0,guard_percent,100,6,3,185,75,guard,1.2,0.4,1.6,0.176,5.3,-0.7,4.6,0.7,TRUE
 31246,2024,4709,De'Andre Hunter,SF,ATL,18,539,0,0,48,52,0,wing_big_percent,100,6,8,225,80,wing,0.6,0.2,0.8,0.072,-1.2,-0.9,-2.1,0,FALSE
-31247,2024,4602,De'Anthony Melton,SG,PHI,18,538,4,91,5,0,0,wing_small_percent,96,6,2,200,74,wing,0.7,0.6,1.3,0.114,0.3,0.4,0.6,0.4,TRUE
+31247,2024,4602,De'Anthony Melton,SG,PHI,18,538,4,91,5,0,0,wing_small_percent,96,6,2,200,74,wing,0.7,0.6,1.3,0.114,0.3,0.4,0.6,0.4,FALSE
 31248,2024,3810,DeAndre Jordan,C,DEN,4,64,0,0,0,0,100,big_percent,100,6,11,265,83,big,0.1,0.1,0.2,0.154,0.5,0.9,1.4,0.1,FALSE
 31249,2024,3872,DeMar DeRozan,SF,CHI,18,633,0,4,72,24,0,wing_big_percent,96,6,6,220,78,wing,1.1,0.3,1.5,0.113,2,-0.6,1.5,0.5,TRUE
 31250,2024,4710,Dean Wade,PF,CLE,13,264,0,0,23,72,5,wing_big_percent,95,6,9,228,81,wing,0,0.4,0.4,0.07,-4.1,1.8,-2.4,0,FALSE
@@ -127,7 +125,7 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31256,2024,4490,Dennis Smith Jr.,PG,BRK,11,187,100,0,0,0,0,guard_percent,100,6,2,205,74,guard,0.1,0.1,0.2,0.057,-3.1,0.4,-2.7,0,FALSE
 31257,2024,5130,Dereck Lively II,C,DAL,15,365,0,0,0,0,100,big_percent,100,7,1,230,85,big,0.9,0.4,1.3,0.17,-1.1,-0.1,-1.2,0.1,FALSE
 31258,2024,5042,Dereon Seabron,SG,NOP,5,52,0,75,20,5,0,wing_small_percent,95,NA,NA,NA,NA,wing,0,0.1,0.1,0.078,-2.9,1.1,-1.8,0,FALSE
-31259,2024,4397,Derrick Jones Jr.,SF,DAL,17,381,0,0,56,44,0,wing_big_percent,100,6,5,210,77,wing,0.4,0.3,0.7,0.085,-0.3,-0.9,-1.2,0.1,TRUE
+31259,2024,4397,Derrick Jones Jr.,SF,DAL,17,381,0,0,56,44,0,wing_big_percent,100,6,5,210,77,wing,0.4,0.3,0.7,0.085,-0.3,-0.9,-1.2,0.1,FALSE
 31260,2024,3812,Derrick Rose,PG,MEM,9,169,100,0,0,0,0,guard_percent,100,6,3,200,75,guard,0.2,0.1,0.3,0.078,0.8,-1,-0.3,0.1,TRUE
 31261,2024,4492,Derrick White,SG,BOS,15,483,16,83,2,0,0,guard_percent,99,6,4,190,76,guard,1,0.8,1.8,0.182,1.5,2,3.5,0.7,TRUE
 31262,2024,4824,Desmond Bane,SG,MEM,17,582,12,62,26,0,0,wing_small_percent,88,6,5,215,77,wing,0.4,0.6,1.1,0.09,2.6,-0.1,2.5,0.6,TRUE
@@ -147,16 +145,15 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31276,2024,4611,Duncan Robinson,SF,MIA,17,501,0,26,41,33,0,wing_big_percent,74,6,7,215,79,wing,0.9,0.3,1.2,0.12,1.2,-1.4,-0.2,0.2,FALSE
 31277,2024,5131,Duop Reath,C,POR,10,139,0,0,0,0,100,big_percent,100,6,11,245,83,big,0.1,0.1,0.2,0.086,-0.1,0.1,0.1,0.1,FALSE
 31278,2024,4239,Dwight Powell,C,DAL,16,238,0,0,0,2,98,big_percent,100,6,10,240,82,big,0.8,0.2,1,0.205,0.4,0.6,1.1,0.2,TRUE
-31279,2024,4829,Dylan Windler,SF,NYK,3,7,0,0,0,100,0,wing_big_percent,100,6,6,196,78,wing,0,0,0,0.255,3.4,3.6,7,0,FALSE
 31279,2024,4829,Dylan Windler,SF,NYK,3,7,0,0,0,100,0,big_percent,100,6,6,196,78,big,0,0,0,0.255,3.4,3.6,7,0,FALSE
+31279,2024,4829,Dylan Windler,SF,NYK,3,7,0,0,0,100,0,wing_big_percent,100,6,6,196,78,wing,0,0,0,0.255,3.4,3.6,7,0,FALSE
 31280,2024,5046,Dyson Daniels,PG,NOP,19,521,69,29,3,0,0,guard_percent,98,6,8,199,80,guard,-0.1,0.8,0.7,0.061,-2.8,2,-0.7,0.2,FALSE
 31281,2024,4392,Dāvis Bertāns,PF,OKC,5,46,0,0,22,51,28,big_percent,79,6,10,225,82,big,0.1,0,0.1,0.108,-2.2,-0.9,-3.1,0,FALSE
 31282,2024,5132,E.J. Liddell,PF,NOP,3,9,0,0,0,86,14,big_percent,100,6,7,240,79,big,0,0,0,-0.138,-8.7,0,-8.6,0,FALSE
 31283,2024,5133,Emoni Bates,SF,CLE,7,52,0,7,90,3,0,wing_small_percent,97,6,10,170,82,wing,-0.1,0.1,0,-0.021,-4.9,-1.5,-6.4,-0.1,FALSE
 31284,2024,3815,Eric Gordon,SG,PHO,17,535,25,71,4,0,0,guard_percent,96,6,3,215,75,guard,0.6,0.3,0.9,0.081,0.5,-1.5,-1,0.1,FALSE
-31285,2024,4930,Eugene Omoruyi,SF,WAS,11,75,0,0,2,98,0,wing_big_percent,100,6,7,244,79,wing,0.3,0.1,0.4,0.246,7.2,0.2,7.5,0.2,TRUE
+31285,2024,4930,Eugene Omoruyi,SF,WAS,11,75,0,0,2,98,0,wing_big_percent,100,6,7,244,79,wing,0.3,0.1,0.4,0.246,7.2,0.2,7.5,0.2,FALSE
 31286,2024,4086,Evan Fournier,SG,NYK,1,16,0,0,100,0,0,wing_small_percent,100,6,6,205,78,wing,-0.1,0,0,-0.131,-15,-0.8,-15.8,-0.1,FALSE
-31286,2024,4086,Evan Fournier,SG,NYK,1,16,0,0,100,0,0,wing_big_percent,100,6,6,205,78,wing,-0.1,0,0,-0.131,-15,-0.8,-15.8,-0.1,FALSE
 31287,2024,4931,Evan Mobley,PF,CLE,19,632,0,0,0,43,57,big_percent,100,6,11,215,83,big,1,1.1,2,0.155,0.3,1.7,2,0.6,TRUE
 31289,2024,5134,Filip Petrušev,C,PHI,1,3,0,0,0,57,43,big_percent,100,NA,NA,NA,NA,big,0,0,0,0.056,-2.5,-2.6,-5.1,0,FALSE
 31290,2024,5134,Filip Petrušev,C,SAC,2,7,0,0,0,0,100,big_percent,100,NA,NA,NA,NA,big,0,0,0,0.013,-5.2,-4.1,-9.3,0,FALSE
@@ -171,20 +168,20 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31299,2024,4618,Gary Trent Jr.,SG,TOR,16,416,7,89,4,0,0,guard_percent,96,6,5,209,77,guard,-0.1,0.4,0.3,0.035,-3,-0.3,-3.3,-0.1,FALSE
 31300,2024,4405,Georges Niang,PF,CLE,19,424,0,0,26,73,2,wing_big_percent,99,6,7,230,79,wing,0.1,0.4,0.5,0.057,-3.1,-0.3,-3.4,-0.1,FALSE
 31301,2024,4164,Giannis Antetokounmpo,PF,MIL,18,616,0,0,0,57,43,big_percent,100,6,11,242,83,big,1.6,0.8,2.4,0.191,4.8,1.1,6,1.2,TRUE
-31302,2024,4719,Goga Bitadze,C,ORL,16,320,0,0,0,0,100,big_percent,100,6,11,250,83,big,0.8,0.8,1.5,0.228,0.3,3.5,3.8,0.5,TRUE
+31302,2024,4719,Goga Bitadze,C,ORL,16,320,0,0,0,0,100,big_percent,100,6,11,250,83,big,0.8,0.8,1.5,0.228,0.3,3.5,3.8,0.5,FALSE
 31303,2024,3941,Gordon Hayward,SF,CHO,16,517,0,65,35,0,0,wing_small_percent,100,6,7,225,79,wing,0.1,0.1,0.2,0.022,-1.9,-0.9,-2.8,-0.1,FALSE
 31304,2024,5135,Gradey Dick,SG,TOR,15,220,4,56,40,0,0,wing_small_percent,96,6,6,205,78,wing,-0.3,0.2,-0.1,-0.032,-7.4,-1.9,-9.2,-0.4,FALSE
 31305,2024,4720,Grant Williams,PF,DAL,17,489,0,0,0,90,9,big_percent,99,6,6,236,78,big,0.5,0.2,0.6,0.063,-1.1,-1.6,-2.6,-0.1,FALSE
 31306,2024,4620,Grayson Allen,SG,PHO,16,520,81,19,0,0,0,guard_percent,100,6,4,198,76,guard,0.7,0.3,1,0.095,-0.4,-1.4,-1.7,0,FALSE
-31307,2024,5136,Gregory Jackson II,PF,MEM,3,7,0,0,0,100,0,wing_big_percent,100,6,9,215,81,wing,-0.1,0,-0.1,-0.588,-20.3,-4.9,-25.2,0,FALSE
 31307,2024,5136,Gregory Jackson II,PF,MEM,3,7,0,0,0,100,0,big_percent,100,6,9,215,81,big,-0.1,0,-0.1,-0.588,-20.3,-4.9,-25.2,0,FALSE
-31308,2024,5137,Gui Santos,PF,GSW,2,12,0,0,0,100,0,wing_big_percent,100,6,8,209,80,wing,0,0,0,-0.089,-6.7,-3.2,-9.9,0,FALSE
+31307,2024,5136,Gregory Jackson II,PF,MEM,3,7,0,0,0,100,0,wing_big_percent,100,6,9,215,81,wing,-0.1,0,-0.1,-0.588,-20.3,-4.9,-25.2,0,FALSE
 31308,2024,5137,Gui Santos,PF,GSW,2,12,0,0,0,100,0,big_percent,100,6,8,209,80,big,0,0,0,-0.089,-6.7,-3.2,-9.9,0,FALSE
+31308,2024,5137,Gui Santos,PF,GSW,2,12,0,0,0,100,0,wing_big_percent,100,6,8,209,80,wing,0,0,0,-0.089,-6.7,-3.2,-9.9,0,FALSE
 31309,2024,4089,Harrison Barnes,PF,SAC,17,533,0,0,11,87,1,wing_big_percent,98,6,8,225,80,wing,0.8,0.3,1.1,0.099,-0.2,-1,-1.2,0.1,FALSE
-31310,2024,4622,Harry Giles,C,BRK,2,12,0,0,0,100,0,wing_big_percent,100,6,11,240,83,wing,0,0,0,0.198,7.5,1,8.5,0,FALSE
 31310,2024,4622,Harry Giles,C,BRK,2,12,0,0,0,100,0,big_percent,100,6,11,240,83,big,0,0,0,0.198,7.5,1,8.5,0,FALSE
+31310,2024,4622,Harry Giles,C,BRK,2,12,0,0,0,100,0,wing_big_percent,100,6,11,240,83,wing,0,0,0,0.198,7.5,1,8.5,0,FALSE
 31311,2024,4623,Haywood Highsmith,PF,MIA,14,331,0,0,73,26,0,wing_big_percent,99,6,7,220,79,wing,0.1,0.5,0.5,0.079,-2.4,1.6,-0.9,0.1,FALSE
-31312,2024,4939,Herbert Jones,SF,NOP,16,494,0,0,54,46,0,wing_big_percent,100,6,8,210,80,wing,0.5,0.8,1.3,0.123,-1.7,2.6,0.8,0.4,TRUE
+31312,2024,4939,Herbert Jones,SF,NOP,16,494,0,0,54,46,0,wing_big_percent,100,6,8,210,80,wing,0.5,0.8,1.3,0.123,-1.7,2.6,0.8,0.4,FALSE
 31313,2024,5138,Hunter Tyson,PF,DEN,7,18,0,0,0,59,41,big_percent,100,6,8,215,80,big,0,0,0,-0.038,-10.9,-1.9,-12.8,-0.1,FALSE
 31314,2024,4837,Immanuel Quickley,SG,NYK,18,445,39,61,0,0,0,guard_percent,100,6,3,190,75,guard,0.9,0.5,1.4,0.155,2.4,0.1,2.5,0.5,FALSE
 31315,2024,4838,Isaac Okoro,SF,CLE,10,235,0,3,74,23,0,wing_big_percent,97,6,5,225,77,wing,0.2,0.2,0.4,0.091,-2.6,1.1,-1.5,0,FALSE
@@ -192,18 +189,18 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31317,2024,4940,Isaiah Jackson,C,IND,10,132,0,0,0,15,85,big_percent,100,6,10,206,82,big,0.3,0.2,0.4,0.151,-2.6,2,-0.6,0,FALSE
 31318,2024,4839,Isaiah Joe,SG,OKC,18,372,15,81,4,0,0,guard_percent,96,6,4,165,76,guard,0.8,0.5,1.3,0.165,3.4,0.8,4.2,0.6,FALSE
 31319,2024,4941,Isaiah Livers,PF,DET,5,121,0,0,29,71,1,wing_big_percent,100,6,7,230,79,wing,-0.1,0,-0.1,-0.044,-4,-3.4,-7.4,-0.2,FALSE
-31320,2024,5047,Isaiah Mobley,PF,CLE,2,10,0,0,0,100,0,wing_big_percent,100,6,8,240,80,wing,0,0,0,-0.007,-7.6,4.3,-3.3,0,FALSE
 31320,2024,5047,Isaiah Mobley,PF,CLE,2,10,0,0,0,100,0,big_percent,100,6,8,240,80,big,0,0,0,-0.007,-7.6,4.3,-3.3,0,FALSE
+31320,2024,5047,Isaiah Mobley,PF,CLE,2,10,0,0,0,100,0,wing_big_percent,100,6,8,240,80,wing,0,0,0,-0.007,-7.6,4.3,-3.3,0,FALSE
 31321,2024,4840,Isaiah Stewart,PF,DET,19,595,0,0,0,79,21,big_percent,100,6,8,250,80,big,0.1,0.3,0.4,0.029,-2.3,-1.5,-3.8,-0.3,FALSE
 31322,2024,3946,Ish Smith,PG,CHO,11,174,100,0,0,0,0,guard_percent,100,6,0,175,72,guard,-0.1,0,-0.1,-0.035,-5.8,-0.7,-6.5,-0.2,FALSE
-31323,2024,4943,Ish Wainright,SF,POR,2,5,0,0,0,100,0,wing_big_percent,100,6,6,250,78,wing,0,0,0,-0.075,-14.1,5.1,-9,0,FALSE
 31323,2024,4943,Ish Wainright,SF,POR,2,5,0,0,0,100,0,big_percent,100,6,6,250,78,big,0,0,0,-0.075,-14.1,5.1,-9,0,FALSE
+31323,2024,4943,Ish Wainright,SF,POR,2,5,0,0,0,100,0,wing_big_percent,100,6,6,250,78,wing,0,0,0,-0.075,-14.1,5.1,-9,0,FALSE
 31324,2024,4410,Ivica Zubac,C,LAC,18,467,0,0,0,0,100,big_percent,100,7,0,240,84,big,0.9,0.7,1.6,0.166,-0.3,-0.7,-1,0.1,FALSE
 31325,2024,4972,JT Thor,PF,CHO,17,280,0,0,0,65,35,big_percent,100,6,10,205,82,big,0.1,0,0.1,0.017,-3.4,-1.6,-4.9,-0.2,FALSE
 31326,2024,3824,JaVale McGee,C,SAC,15,145,0,0,0,0,100,big_percent,100,7,0,270,84,big,0.1,0.2,0.3,0.114,0,-0.3,-0.3,0.1,FALSE
 31327,2024,5048,Jabari Smith Jr.,PF,HOU,16,483,0,0,0,87,13,big_percent,100,6,11,220,83,big,0.4,0.8,1.2,0.121,-0.4,0.4,0,0.3,FALSE
 31328,2024,5049,Jabari Walker,SF,POR,18,306,0,6,48,43,3,wing_big_percent,91,6,9,215,81,wing,0,0.5,0.5,0.08,-3.3,0.3,-2.9,-0.1,FALSE
-31329,2024,5051,Jacob Gilyard,PG,MEM,13,229,100,0,0,0,0,guard_percent,100,NA,NA,NA,NA,guard,0.4,0.2,0.6,0.121,-1.5,0.3,-1.1,0.1,TRUE
+31329,2024,5051,Jacob Gilyard,PG,MEM,13,229,100,0,0,0,0,guard_percent,100,NA,NA,NA,NA,guard,0.4,0.2,0.6,0.121,-1.5,0.3,-1.1,0.1,FALSE
 31330,2024,5052,Jaden Hardy,SG,DAL,14,146,0,80,19,1,0,wing_small_percent,99,6,4,198,76,wing,-0.1,0.1,0,0.003,-2.8,-2.9,-5.7,-0.1,FALSE
 31331,2024,5053,Jaden Ivey,SG,DET,15,340,1,79,20,0,0,wing_small_percent,99,6,4,195,76,wing,0.3,0.1,0.5,0.067,-0.7,-0.8,-1.5,0,FALSE
 31332,2024,4841,Jaden McDaniels,SF,MIN,11,260,0,10,89,1,0,wing_small_percent,99,6,9,185,81,wing,0.3,0.4,0.7,0.123,-1.9,0.9,-0.9,0.1,FALSE
@@ -214,7 +211,7 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31337,2024,5054,Jake LaRavia,PF,MEM,5,61,0,0,1,99,0,wing_big_percent,100,6,8,235,80,wing,-0.1,0,-0.1,-0.048,-8.1,-2.6,-10.7,-0.1,FALSE
 31338,2024,4412,Jakob Poeltl,C,TOR,19,505,0,0,0,0,100,big_percent,100,7,0,245,84,big,1,0.8,1.8,0.173,0.3,2,2.2,0.5,TRUE
 31339,2024,4630,Jalen Brunson,PG,NYK,18,639,100,0,0,0,0,guard_percent,100,6,2,190,74,guard,1.9,0.7,2.7,0.2,5.2,0.3,5.5,1.2,TRUE
-31340,2024,5055,Jalen Duren,C,DET,12,344,0,0,0,0,100,big_percent,100,6,10,250,82,big,0.2,0.4,0.5,0.074,-1.8,0.9,-0.9,0.1,TRUE
+31340,2024,5055,Jalen Duren,C,DET,12,344,0,0,0,0,100,big_percent,100,6,10,250,82,big,0.2,0.4,0.5,0.074,-1.8,0.9,-0.9,0.1,FALSE
 31341,2024,4946,Jalen Green,SG,HOU,16,510,8,91,1,0,0,guard_percent,99,6,4,178,76,guard,0.2,0.6,0.8,0.076,0.8,-0.5,0.3,0.3,FALSE
 31342,2024,5140,Jalen Hood-Schifino,SG,LAL,3,41,0,80,20,0,0,wing_small_percent,100,6,6,215,78,wing,-0.1,0,-0.1,-0.146,-11,-4.6,-15.6,-0.1,FALSE
 31343,2024,4947,Jalen Johnson,SF,ATL,15,449,0,0,0,98,2,big_percent,100,6,9,220,81,big,0.7,0.4,1.1,0.118,1.4,0.8,2.2,0.5,TRUE
@@ -229,12 +226,11 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31352,2024,4413,Jamal Murray,PG,DEN,8,238,67,33,0,0,0,guard_percent,100,6,4,215,76,guard,0.3,0.2,0.5,0.104,2.1,-2.2,-0.1,0.1,FALSE
 31353,2024,5058,Jamaree Bouyea,PG,POR,6,57,100,0,0,0,0,guard_percent,100,NA,NA,NA,NA,guard,-0.4,0,-0.3,-0.282,-13,-5,-18,-0.2,FALSE
 31354,2024,4949,James Bouknight,SG,CHO,1,5,0,0,100,0,0,wing_small_percent,100,6,5,190,77,wing,0,0,0,0.274,21.6,0.1,21.7,0,FALSE
-31354,2024,4949,James Bouknight,SG,CHO,1,5,0,0,100,0,0,wing_big_percent,100,6,5,190,77,wing,0,0,0,0.274,21.6,0.1,21.7,0,FALSE
 31355,2024,3880,James Harden,SG,LAC,13,437,3,64,32,1,0,wing_small_percent,96,6,5,220,77,wing,0.9,0.6,1.5,0.169,2.2,1.4,3.7,0.6,FALSE
 31356,2024,4846,James Wiseman,C,DET,10,111,0,0,0,0,100,big_percent,100,7,0,240,84,big,0.1,0.1,0.1,0.064,-3.2,-2,-5.2,-0.1,FALSE
-31357,2024,5144,Jarace Walker,PF,IND,5,41,0,0,0,100,0,wing_big_percent,100,6,8,240,80,wing,0,0,0,0.032,-1.4,0.2,-1.2,0,FALSE
 31357,2024,5144,Jarace Walker,PF,IND,5,41,0,0,0,100,0,big_percent,100,6,8,240,80,big,0,0,0,0.032,-1.4,0.2,-1.2,0,FALSE
-31358,2024,4952,Jared Butler,SG,WAS,7,36,72,28,0,0,0,guard_percent,100,6,3,195,75,guard,0.1,0,0.1,0.139,1.3,2.9,4.2,0.1,TRUE
+31357,2024,5144,Jarace Walker,PF,IND,5,41,0,0,0,100,0,wing_big_percent,100,6,8,240,80,wing,0,0,0,0.032,-1.4,0.2,-1.2,0,FALSE
+31358,2024,4952,Jared Butler,SG,WAS,7,36,72,28,0,0,0,guard_percent,100,6,3,195,75,guard,0.1,0,0.1,0.139,1.3,2.9,4.2,0.1,FALSE
 31359,2024,5059,Jared Rhoden,SG,DET,5,30,0,23,78,0,0,wing_small_percent,101,6,6,210,78,wing,0,0,0,0.064,-2.5,-0.9,-3.4,0,FALSE
 31360,2024,4632,Jaren Jackson Jr.,C,MEM,17,536,0,0,0,0,100,big_percent,100,6,10,242,82,big,0.1,0.7,0.8,0.069,-1.1,-0.4,-1.5,0.1,TRUE
 31361,2024,4515,Jarrett Allen,C,CLE,14,406,0,0,0,0,100,big_percent,100,6,11,243,83,big,1.1,0.5,1.6,0.191,0.9,0.7,1.6,0.4,FALSE
@@ -285,15 +281,15 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31405,2024,5070,Julian Champagnie,SF,SAS,11,172,0,2,62,36,0,wing_big_percent,98,6,8,220,80,wing,-0.2,0.1,-0.1,-0.033,-2,-1.1,-3.2,0,FALSE
 31406,2024,5150,Julian Phillips,SF,CHI,9,45,0,0,71,29,0,wing_big_percent,100,6,8,198,80,wing,-0.2,0,-0.2,-0.179,-12,-3.3,-15.3,-0.1,FALSE
 31407,2024,5151,Julian Strawther,SF,DEN,16,197,0,22,71,7,0,wing_small_percent,93,6,7,205,79,wing,0.1,0.2,0.2,0.059,-3.2,-1.4,-4.5,-0.1,FALSE
-31408,2024,4266,Julius Randle,PF,NYK,18,629,0,0,0,100,0,wing_big_percent,100,6,8,250,80,wing,0.1,1,1.1,0.082,0.2,0.4,0.6,0.4,TRUE
 31408,2024,4266,Julius Randle,PF,NYK,18,629,0,0,0,100,0,big_percent,100,6,8,250,80,big,0.1,1,1.1,0.082,0.2,0.4,0.6,0.4,TRUE
+31408,2024,4266,Julius Randle,PF,NYK,18,629,0,0,0,100,0,wing_big_percent,100,6,8,250,80,wing,0.1,1,1.1,0.082,0.2,0.4,0.6,0.4,TRUE
 31409,2024,4102,Justin Holiday,SG,DEN,10,137,14,83,4,0,0,guard_percent,97,6,6,180,78,guard,0.3,0.1,0.4,0.136,-0.3,0.2,0,0.1,FALSE
 31410,2024,5071,Justin Minaya,SF,POR,5,30,0,32,68,0,0,wing_small_percent,100,6,5,210,77,wing,0,0,0,0.04,-0.7,-3.9,-4.6,0,FALSE
 31411,2024,4267,Jusuf Nurkić,C,PHO,18,498,0,0,0,0,100,big_percent,100,7,0,290,84,big,0.8,0.8,1.6,0.15,0.1,1.6,1.6,0.5,FALSE
 31413,2024,5152,KJ Martin,SF,LAC,2,31,0,28,72,0,0,wing_small_percent,100,6,6,215,78,wing,-0.1,0,0,-0.016,-7.1,0.2,-6.9,0,FALSE
 31414,2024,5152,KJ Martin,SF,PHI,8,41,0,18,71,11,0,wing_small_percent,89,6,6,215,78,wing,0,0,0,-0.019,-8.9,-1.1,-10.1,-0.1,FALSE
-31415,2024,5153,Kaiser Gates,SF,NOP,1,7,0,0,0,100,0,wing_big_percent,100,NA,NA,NA,NA,wing,-0.1,0,-0.1,-0.548,-18.5,-10.1,-28.5,-0.1,FALSE
 31415,2024,5153,Kaiser Gates,SF,NOP,1,7,0,0,0,100,0,big_percent,100,NA,NA,NA,NA,big,-0.1,0,-0.1,-0.548,-18.5,-10.1,-28.5,-0.1,FALSE
+31415,2024,5153,Kaiser Gates,SF,NOP,1,7,0,0,0,100,0,wing_big_percent,100,NA,NA,NA,NA,wing,-0.1,0,-0.1,-0.548,-18.5,-10.1,-28.5,-0.1,FALSE
 31416,2024,4339,Karl-Anthony Towns,PF,MIN,18,604,0,0,0,95,5,big_percent,100,7,0,248,84,big,0.7,1.4,2.1,0.163,1.2,2,3.3,0.8,TRUE
 31417,2024,4032,Kawhi Leonard,SF,LAC,18,614,0,14,63,23,1,wing_big_percent,86,6,7,225,79,wing,1.1,0.9,2,0.16,3.1,0.8,3.9,0.9,TRUE
 31418,2024,5072,Keegan Murray,SF,SAC,13,430,0,0,82,18,0,wing_big_percent,100,6,8,215,80,wing,0,0.4,0.4,0.05,-1.8,-0.8,-2.6,-0.1,FALSE
@@ -343,23 +339,23 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31461,2024,4654,Luka Dončić,PG,DAL,17,599,93,7,0,0,0,guard_percent,100,6,7,230,79,guard,1.8,0.6,2.4,0.192,7.6,0.6,8.3,1.6,TRUE
 31462,2024,4982,Luka Garza,C,MIN,4,13,0,0,0,15,85,big_percent,100,6,10,235,82,big,0,0,0,0.061,-5.7,-9,-14.7,0,FALSE
 31463,2024,4755,Luka Šamanić,PF,UTA,8,43,0,0,16,76,8,wing_big_percent,92,6,10,227,82,wing,-0.1,0,0,-0.026,-2,-1.3,-3.3,0,FALSE
-31464,2024,4538,Luke Kennard,SG,MEM,8,172,6,88,5,0,0,guard_percent,94,6,5,206,77,guard,0.1,0.2,0.3,0.075,-0.3,-0.1,-0.4,0.1,TRUE
+31464,2024,4538,Luke Kennard,SG,MEM,8,172,6,88,5,0,0,guard_percent,94,6,5,206,77,guard,0.1,0.2,0.3,0.075,-0.3,-0.1,-0.4,0.1,FALSE
 31465,2024,4539,Luke Kornet,C,BOS,13,176,0,0,0,0,100,big_percent,100,7,2,250,86,big,0.6,0.4,0.9,0.253,1.2,3.1,4.3,0.3,FALSE
 31466,2024,4860,Malachi Flynn,PG,TOR,19,320,88,12,0,0,0,guard_percent,100,6,1,175,73,guard,0.1,0.4,0.4,0.065,-3,0.7,-2.3,0,FALSE
 31467,2024,5079,Malaki Branham,SG,SAS,18,371,14,81,4,0,0,guard_percent,95,6,4,180,76,guard,-0.4,0,-0.4,-0.049,-4.4,-2.5,-6.9,-0.5,FALSE
 31468,2024,4424,Malcolm Brogdon,PG,POR,13,372,71,29,0,0,0,guard_percent,100,6,4,229,76,guard,0.5,0.4,0.9,0.112,3.6,-0.2,3.3,0.5,TRUE
-31469,2024,5161,Malcolm Cazalon,SG,DET,1,3,0,0,0,100,0,wing_big_percent,100,6,6,212,78,wing,0,0,0,-0.017,-6.2,-3,-9.2,0,FALSE
 31469,2024,5161,Malcolm Cazalon,SG,DET,1,3,0,0,0,100,0,big_percent,100,6,6,212,78,big,0,0,0,-0.017,-6.2,-3,-9.2,0,FALSE
+31469,2024,5161,Malcolm Cazalon,SG,DET,1,3,0,0,0,100,0,wing_big_percent,100,6,6,212,78,wing,0,0,0,-0.017,-6.2,-3,-9.2,0,FALSE
 31470,2024,4426,Malik Beasley,SG,MIL,19,544,2,94,3,0,0,wing_small_percent,97,6,4,187,76,wing,0.8,0.4,1.2,0.105,0.5,-0.4,0.1,0.3,TRUE
 31471,2024,4541,Malik Monk,SG,SAC,17,412,24,75,1,0,0,guard_percent,99,6,3,200,75,guard,0.4,0.3,0.8,0.088,2.5,-1,1.4,0.4,FALSE
 31472,2024,5080,MarJon Beauchamp,SF,MIL,15,242,0,20,77,3,0,wing_small_percent,97,6,6,199,78,wing,0.1,0.1,0.2,0.039,-2.5,-1.5,-4,-0.1,FALSE
 31473,2024,4042,Marcus Morris,PF,PHI,11,117,0,1,61,38,0,wing_big_percent,99,6,8,218,80,wing,0.1,0.1,0.2,0.081,-1.6,-0.4,-2,0,FALSE
-31474,2024,5162,Marcus Sasser,PG,DET,19,355,100,0,0,0,0,guard_percent,100,6,2,195,74,guard,0.6,0.2,0.7,0.098,0.3,0,0.3,0.2,TRUE
+31474,2024,5162,Marcus Sasser,PG,DET,19,355,100,0,0,0,0,guard_percent,100,6,2,195,74,guard,0.6,0.2,0.7,0.098,0.3,0,0.3,0.2,FALSE
 31475,2024,4275,Marcus Smart,PG,MEM,11,329,87,14,0,0,0,guard_percent,101,6,3,220,75,guard,-0.4,0.4,0,0.006,-4.4,0.4,-3.9,-0.1,FALSE
 31476,2024,5081,Mark Williams,C,CHO,17,459,0,0,0,0,100,big_percent,100,7,0,241,84,big,1.6,0.3,1.9,0.203,2.4,-1,1.5,0.4,TRUE
 31477,2024,4544,Markelle Fultz,PG,ORL,5,143,81,19,0,0,0,guard_percent,100,6,4,209,76,guard,0.1,0.2,0.3,0.098,-0.9,1.3,0.4,0.1,FALSE
-31478,2024,4043,Markieff Morris,PF,DAL,2,9,0,0,0,100,0,wing_big_percent,100,6,9,245,81,wing,-0.1,0,-0.1,-0.398,-13.2,-8.9,-22.1,0,FALSE
 31478,2024,4043,Markieff Morris,PF,DAL,2,9,0,0,0,100,0,big_percent,100,6,9,245,81,big,-0.1,0,-0.1,-0.398,-13.2,-8.9,-22.1,0,FALSE
+31478,2024,4043,Markieff Morris,PF,DAL,2,9,0,0,0,100,0,wing_big_percent,100,6,9,245,81,wing,-0.1,0,-0.1,-0.398,-13.2,-8.9,-22.1,0,FALSE
 31479,2024,5163,Markquis Nowell,SG,TOR,1,4,100,0,0,0,0,guard_percent,100,5,8,160,68,guard,0,0,0.1,0.695,29.1,14.7,43.8,0,FALSE
 31480,2024,4759,Marques Bolden,C,MIL,1,3,0,0,0,0,100,big_percent,100,6,10,249,82,big,0,0,0,0.101,-8.2,2.7,-5.5,0,FALSE
 31481,2024,4656,Marvin Bagley III,C,DET,18,336,0,0,0,2,98,big_percent,100,6,10,235,82,big,0.7,0.1,0.9,0.123,0.9,-1.3,-0.4,0.1,TRUE
@@ -371,7 +367,7 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31487,2024,4547,Maxi Kleber,C,DAL,5,90,0,0,0,11,89,big_percent,100,6,10,240,82,big,0,0.1,0,0.014,-3.8,-0.3,-4.1,0,FALSE
 31488,2024,5164,Maxwell Lewis,SF,LAL,9,40,0,19,74,7,0,wing_small_percent,93,6,7,195,79,wing,-0.2,0,-0.1,-0.171,-9.8,-2.3,-12.1,-0.1,FALSE
 31489,2024,4766,Michael Porter Jr.,SF,DEN,19,592,0,0,67,32,1,wing_big_percent,99,6,10,218,82,wing,0.9,0.7,1.6,0.128,2.4,-1.6,0.8,0.4,TRUE
-31490,2024,4658,Mikal Bridges,SF,BRK,18,630,1,24,32,41,2,wing_big_percent,73,6,6,209,78,wing,0.8,0.5,1.3,0.101,1.3,-0.8,0.5,0.4,TRUE
+31490,2024,4658,Mikal Bridges,SF,BRK,18,630,1,24,32,41,2,wing_big_percent,73,6,6,209,78,wing,0.8,0.5,1.3,0.101,1.3,-0.8,0.5,0.4,FALSE
 31491,2024,3779,Mike Conley,PG,MIN,18,526,100,0,0,0,0,guard_percent,100,6,0,175,72,guard,1.2,0.8,2.1,0.19,1.3,1.6,3,0.7,TRUE
 31492,2024,4183,Mike Muscala,C,WAS,7,82,0,0,0,0,100,big_percent,100,6,10,240,82,big,-0.1,0,0,-0.019,-5,-0.6,-5.6,-0.1,FALSE
 31493,2024,4659,Miles Bridges,SF,CHO,7,255,0,1,77,22,0,wing_big_percent,99,6,7,225,79,wing,0.4,0.1,0.5,0.103,0.9,-0.5,0.4,0.2,TRUE
@@ -381,8 +377,8 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31497,2024,4663,Moritz Wagner,C,ORL,18,345,0,0,0,0,100,big_percent,100,6,11,245,83,big,1.1,0.6,1.6,0.224,2.3,1,3.3,0.5,TRUE
 31498,2024,4768,Moses Brown,C,POR,3,14,0,0,0,0,100,big_percent,100,NA,NA,NA,NA,big,0,0,0.1,0.212,3.8,-1.8,2,0,FALSE
 31499,2024,4992,Moses Moody,SG,GSW,19,344,0,36,63,1,0,wing_small_percent,99,6,6,205,78,wing,0.6,0.4,0.9,0.129,1.4,0.5,1.9,0.3,TRUE
-31500,2024,5165,Mouhamed Gueye,PF,ATL,2,4,0,0,0,100,0,wing_big_percent,100,6,11,210,83,wing,0,0,0,-0.111,-12.3,3.7,-8.6,0,FALSE
 31500,2024,5165,Mouhamed Gueye,PF,ATL,2,4,0,0,0,100,0,big_percent,100,6,11,210,83,big,0,0,0,-0.111,-12.3,3.7,-8.6,0,FALSE
+31500,2024,5165,Mouhamed Gueye,PF,ATL,2,4,0,0,0,100,0,wing_big_percent,100,6,11,210,83,wing,0,0,0,-0.111,-12.3,3.7,-8.6,0,FALSE
 31501,2024,5084,Moussa Diabaté,C,LAC,9,55,0,0,0,0,100,big_percent,100,6,11,210,83,big,0.2,0.1,0.3,0.263,4.1,-1.4,2.8,0.1,FALSE
 31502,2024,4350,Myles Turner,C,IND,17,452,0,0,0,0,100,big_percent,100,6,11,250,83,big,0.8,0.4,1.2,0.122,0.8,-0.7,0.1,0.2,FALSE
 31503,2024,4865,Naji Marshall,SF,NOP,10,218,0,9,56,36,0,wing_big_percent,92,6,7,220,79,wing,0.3,0.3,0.6,0.133,0.6,0.8,1.3,0.2,FALSE
@@ -404,7 +400,6 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31520,2024,4555,OG Anunoby,SF,TOR,15,482,0,0,80,17,3,wing_big_percent,97,6,7,232,79,wing,0.2,0.6,0.8,0.08,-0.3,0.3,0,0.2,FALSE
 31521,2024,4871,Obi Toppin,PF,IND,17,413,0,0,0,92,8,big_percent,100,6,9,220,81,big,0.9,0,0.9,0.105,1.2,-2.1,-0.9,0.1,FALSE
 31522,2024,5086,Ochai Agbaji,SG,UTA,19,376,0,6,88,6,0,wing_small_percent,94,6,5,215,77,wing,0.3,0.2,0.5,0.061,-1.1,-0.1,-1.1,0.1,TRUE
-31522,2024,5086,Ochai Agbaji,SG,UTA,19,376,0,6,88,6,0,wing_big_percent,94,6,5,215,77,wing,0.3,0.2,0.5,0.061,-1.1,-0.1,-1.1,0.1,TRUE
 31523,2024,4996,Olivier Sarr,C,OKC,5,54,0,0,0,0,100,big_percent,100,7,0,237,84,big,0.1,0.1,0.2,0.164,-3.6,1,-2.6,0,FALSE
 31524,2024,5168,Olivier-Maxence Prosper,PF,DAL,7,41,0,0,23,63,14,wing_big_percent,86,6,8,230,80,wing,0,0,0,-0.014,-5.5,-3.6,-9,-0.1,FALSE
 31525,2024,4997,Omer Yurtseven,C,UTA,13,143,0,0,0,0,100,big_percent,100,7,0,264,84,big,0.2,0.1,0.3,0.092,-1.2,-0.4,-1.6,0,FALSE
@@ -440,15 +435,15 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31557,2024,4197,Robert Covington,SF,PHI,15,256,0,6,73,21,0,wing_big_percent,94,6,7,209,79,wing,0.5,0.4,0.9,0.168,0.9,2.6,3.5,0.4,TRUE
 31558,2024,4667,Robert Williams,C,POR,6,119,0,0,0,18,82,big_percent,100,6,9,237,81,big,0.2,0.2,0.4,0.164,-2.3,2.8,0.4,0.1,FALSE
 31559,2024,3845,Robin Lopez,C,MIL,3,9,0,0,0,0,100,big_percent,100,7,1,281,85,big,0,0,0,0.047,-6.9,0.2,-6.7,0,FALSE
-31560,2024,5094,Ron Harper Jr.,PF,TOR,1,4,0,0,0,100,0,wing_big_percent,100,6,6,245,78,wing,0,0,0,0.117,-11.5,3.3,-8.3,0,FALSE
 31560,2024,5094,Ron Harper Jr.,PF,TOR,1,4,0,0,0,100,0,big_percent,100,6,6,245,78,big,0,0,0,0.117,-11.5,3.3,-8.3,0,FALSE
+31560,2024,5094,Ron Harper Jr.,PF,TOR,1,4,0,0,0,100,0,wing_big_percent,100,6,6,245,78,wing,0,0,0,0.117,-11.5,3.3,-8.3,0,FALSE
 31561,2024,4560,Royce O'Neale,SF,BRK,17,508,2,28,54,14,2,wing_small_percent,82,6,4,226,76,wing,0.4,0.4,0.8,0.08,-0.9,1.1,0.2,0.3,FALSE
 31562,2024,4199,Rudy Gobert,C,MIN,18,583,0,0,0,0,100,big_percent,100,7,1,258,85,big,0.9,1.4,2.3,0.189,-0.9,1.9,1.1,0.5,FALSE
 31563,2024,4784,Rui Hachimura,PF,LAL,12,279,0,0,23,74,3,wing_big_percent,97,6,8,230,80,wing,0.3,0.3,0.6,0.105,-0.2,-0.3,-0.5,0.1,TRUE
 31564,2024,3849,Russell Westbrook,PG,LAC,18,488,84,16,0,0,0,guard_percent,100,6,4,200,76,guard,-0.1,0.8,0.7,0.073,-1,1.2,0.2,0.3,TRUE
 31565,2024,4561,Ryan Arcidiacono,PG,NYK,5,11,0,100,0,0,0,guard_percent,100,6,3,195,75,guard,0,0,0,-0.037,-10.2,-0.7,-10.9,0,FALSE
 31565,2024,4561,Ryan Arcidiacono,PG,NYK,5,11,0,100,0,0,0,wing_small_percent,100,6,3,195,75,wing,0,0,0,-0.037,-10.2,-0.7,-10.9,0,FALSE
-31566,2024,5095,Ryan Rollins,PG,WAS,8,49,100,0,0,0,0,guard_percent,100,6,4,180,76,guard,0.1,0.1,0.2,0.169,0.7,6.3,7,0.1,TRUE
+31566,2024,5095,Ryan Rollins,PG,WAS,8,49,100,0,0,0,0,guard_percent,100,6,4,180,76,guard,0.1,0.1,0.2,0.169,0.7,6.3,7,0.1,FALSE
 31567,2024,4881,Saben Lee,PG,PHO,3,10,100,0,0,0,0,guard_percent,100,6,2,183,74,guard,0.1,0,0.1,0.295,7,0.2,7.3,0,FALSE
 31568,2024,4882,Saddiq Bey,SF,ATL,18,518,0,2,73,25,0,wing_big_percent,98,6,7,215,79,wing,0.8,0.2,1,0.095,0.8,-0.9,-0.1,0.3,FALSE
 31569,2024,5003,Sam Hauser,SF,BOS,18,410,0,11,61,27,1,wing_big_percent,88,6,8,215,80,wing,0.8,0.6,1.4,0.16,2,0.7,2.7,0.5,FALSE
@@ -464,21 +459,19 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31579,2024,4671,Shake Milton,SG,MIN,18,287,22,74,4,0,0,guard_percent,96,6,5,205,77,guard,-0.3,0.5,0.2,0.038,-5.8,1.4,-4.3,-0.2,FALSE
 31580,2024,4563,Shaquille Harrison,SG,MEM,2,4,100,0,0,0,0,guard_percent,100,6,4,190,76,guard,0,0,0,0.095,3.8,6.8,10.5,0,FALSE
 31581,2024,5173,Sidy Cissoko,SF,SAS,1,4,0,0,100,0,0,wing_small_percent,100,6,8,200,80,wing,0,0,0,-0.36,-15.2,-6.5,-21.6,0,FALSE
-31581,2024,5173,Sidy Cissoko,SF,SAS,1,4,0,0,100,0,0,wing_big_percent,100,6,8,200,80,wing,0,0,0,-0.36,-15.2,-6.5,-21.6,0,FALSE
-31582,2024,5098,Simone Fontecchio,SF,UTA,17,285,0,0,86,14,0,wing_big_percent,100,6,8,209,80,wing,0.2,0.1,0.3,0.057,0.2,-1.4,-1.2,0.1,TRUE
+31582,2024,5098,Simone Fontecchio,SF,UTA,17,285,0,0,86,14,0,wing_big_percent,100,6,8,209,80,wing,0.2,0.1,0.3,0.057,0.2,-1.4,-1.2,0.1,FALSE
 31583,2024,4885,Skylar Mays,PG,POR,14,273,100,0,0,0,0,guard_percent,100,6,4,205,76,guard,0.2,0.3,0.4,0.073,-0.9,-0.5,-1.4,0,FALSE
 31584,2024,4291,Spencer Dinwiddie,PG,BRK,17,530,90,10,0,0,0,guard_percent,100,6,5,215,77,guard,1.1,0.2,1.3,0.121,1.1,-1.3,-0.1,0.2,TRUE
-31585,2024,5099,Stanley Umude,SG,DET,15,155,0,24,56,20,0,wing_small_percent,80,6,6,210,78,wing,0.3,0.1,0.4,0.116,-0.1,0.2,0.1,0.1,TRUE
+31585,2024,5099,Stanley Umude,SG,DET,15,155,0,24,56,20,0,wing_small_percent,80,6,6,210,78,wing,0.3,0.1,0.4,0.116,-0.1,0.2,0.1,0.1,FALSE
 31586,2024,3903,Stephen Curry,PG,GSW,17,565,63,37,0,0,0,guard_percent,100,6,2,185,74,guard,1.6,0.5,2.1,0.178,8.3,-0.5,7.8,1.4,TRUE
 31587,2024,4672,Svi Mykhailiuk,SF,BOS,8,59,0,37,54,9,0,wing_small_percent,91,6,7,205,79,wing,-0.1,0.1,0,-0.024,-7.2,0.1,-7.1,-0.1,FALSE
 31588,2024,4365,T.J. McConnell,PG,IND,11,154,100,0,0,0,0,guard_percent,100,6,1,190,73,guard,0.3,0.1,0.4,0.129,1.4,-0.1,1.3,0.1,FALSE
 31589,2024,4789,Talen Horton-Tucker,PG,UTA,19,425,77,18,5,0,0,guard_percent,95,6,4,234,76,guard,-0.3,0.2,0,-0.001,-2.8,-0.7,-3.5,-0.2,FALSE
 31590,2024,5100,Tari Eason,PF,HOU,9,159,0,2,47,52,0,wing_big_percent,99,6,8,216,80,wing,0,0.3,0.4,0.112,-1.4,1.8,0.4,0.1,FALSE
 31591,2024,4450,Taurean Prince,PF,LAL,18,539,0,18,80,2,0,wing_small_percent,98,6,6,218,78,wing,-0.1,0.4,0.3,0.026,-3.9,-0.6,-4.5,-0.3,FALSE
-31592,2024,5174,Taylor Hendricks,PF,UTA,1,2,0,0,0,0,0,guard_percent,0,6,9,210,81,guard,0,0,0,0.143,-1.3,-1.3,-2.6,0,TRUE
-31592,2024,5174,Taylor Hendricks,PF,UTA,1,2,0,0,0,0,0,wing_small_percent,0,6,9,210,81,wing,0,0,0,0.143,-1.3,-1.3,-2.6,0,FALSE
-31592,2024,5174,Taylor Hendricks,PF,UTA,1,2,0,0,0,0,0,wing_big_percent,0,6,9,210,81,wing,0,0,0,0.143,-1.3,-1.3,-2.6,0,FALSE
 31592,2024,5174,Taylor Hendricks,PF,UTA,1,2,0,0,0,0,0,big_percent,0,6,9,210,81,big,0,0,0,0.143,-1.3,-1.3,-2.6,0,FALSE
+31592,2024,5174,Taylor Hendricks,PF,UTA,1,2,0,0,0,0,0,guard_percent,0,6,9,210,81,guard,0,0,0,0.143,-1.3,-1.3,-2.6,0,FALSE
+31592,2024,5174,Taylor Hendricks,PF,UTA,1,2,0,0,0,0,0,wing_small_percent,0,6,9,210,81,wing,0,0,0,0.143,-1.3,-1.3,-2.6,0,FALSE
 31593,2024,4791,Terance Mann,SG,LAC,12,322,48,34,18,1,0,guard_percent,82,6,5,215,77,guard,0.1,0.4,0.5,0.075,-3.1,0.5,-2.6,0,FALSE
 31594,2024,4366,Terry Rozier,SG,CHO,8,289,49,51,0,0,0,guard_percent,100,6,1,190,73,guard,0.3,0,0.3,0.051,1.7,-2.6,-0.9,0.1,FALSE
 31595,2024,5010,Terry Taylor,PF,CHI,5,12,0,0,0,74,26,big_percent,100,6,5,230,77,big,0,0,0,0.124,-2.4,1,-1.4,0,FALSE
@@ -507,7 +500,7 @@ seas_id,season,player_id,player,pos,tm,g,mp,pg_percent,sg_percent,sf_percent,pf_
 31618,2024,4370,Tyus Jones,PG,WAS,18,483,100,0,0,0,0,guard_percent,100,6,1,196,73,guard,0.7,0,0.7,0.069,-0.6,-1.3,-1.9,0,FALSE
 31619,2024,4894,Udoka Azubuike,C,PHO,2,9,0,0,0,0,100,big_percent,100,6,10,280,82,big,0,0,0,0.159,-1.8,-0.9,-2.7,0,FALSE
 31620,2024,5177,Vasilije Micić,PG,OKC,8,98,69,31,0,0,0,guard_percent,100,6,5,200,77,guard,-0.1,0.1,0,-0.008,-4.2,-3.7,-7.8,-0.1,FALSE
-31621,2024,5178,Victor Wembanyama,PF,SAS,18,540,0,0,0,77,23,big_percent,100,7,4,209,88,big,-0.7,0.7,0,0.001,-1.9,0.7,-1.2,0.1,TRUE
+31621,2024,5178,Victor Wembanyama,PF,SAS,18,540,0,0,0,77,23,big_percent,100,7,4,209,88,big,-0.7,0.7,0,0.001,-1.9,0.7,-1.2,0.1,FALSE
 31622,2024,5105,Vince Williams Jr.,SG,MEM,9,96,18,80,2,0,0,guard_percent,98,NA,NA,NA,NA,guard,0,0.1,0.2,0.079,-4.8,2,-2.8,0,FALSE
 31623,2024,5106,Walker Kessler,C,UTA,12,293,0,0,0,0,100,big_percent,100,7,0,245,84,big,0.3,0.3,0.6,0.094,-1.5,0.3,-1.2,0.1,FALSE
 31624,2024,4682,Wendell Carter Jr.,C,ORL,5,147,0,0,0,0,100,big_percent,100,6,10,270,82,big,-0.1,0.2,0.1,0.047,-4.1,-0.6,-4.7,-0.1,FALSE

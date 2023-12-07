@@ -63,6 +63,14 @@ teams=advanced %>% filter(season==current_year,tm != "TOT") %>%
 play_by_play=read_csv("Data/Player Play by Play.csv") %>% 
   filter(season==current_year)
 
+western_conf=c("DAL","DEN","GSW","HOU","LAC","LAL","MEM",
+               "MIN","NOP","OKC","PHO","POR","SAC","SAS",
+               "UTA")
+
+teams_w_conf=tibble(tm=teams) %>% 
+  mutate(conference=case_when(tm %in% western_conf~"West",
+                              TRUE~"East"))
+
 bbref_bow=bow("https://www.basketball-reference.com/",
               user_agent = "Sumitro Datta",force=TRUE,delay = 10)
 ```
@@ -389,9 +397,10 @@ missed_dunks=dunks %>%
   filter(str_detect(HOMEDESCRIPTION,"MISS")| 
            str_detect(VISITORDESCRIPTION,"MISS"))
 made_dunks=anti_join(dunks,missed_dunks)
+
 made_dunks %>% group_by(GAME_ID,PLAYER1_NAME) %>% summarize(dunks_in_game=n()) %>%
   filter(dunks_in_game>=2) %>% ungroup() %>% group_by(PLAYER1_NAME) %>% 
-  summarize(games_w_2plus_dunks=n()) %>% slice_max(games_w_2plus_dunks,n=10)
+  summarize(games_w_2plus_dunks=n()) %>% slice_max(games_w_2plus_dunks,n=10) %>% gt()
 ```
 
 ## The Bowling Ball Award (sponsored by [Pete Weber](#0), presented by Glen "Big Baby" Davis)\*
@@ -578,6 +587,11 @@ rate_based_3pt_fouls_drawn=left_join(
       str_detect(player,"Kevin Knox")~"Kevin Knox II",
       str_detect(player,"Robert Williams")~"Robert Williams III",
       str_detect(player,"A.J. Green")~"AJ Green",
+      str_detect(player,"Reggie Bullock")~"Reggie Bullock Jr.",
+      str_detect(player,"Harry Giles")~"Harry Giles III",
+      str_detect(player,"Gregory Jackson II")~"GG Jackson",
+      str_detect(player,"KJ Martin")~"Kenyon Martin Jr.",
+      str_detect(player,"Jeenathan")~"Nate Williams",
       TRUE~stringi::stri_trans_general(str=player,id="Latin-ASCII"))),
   by=c("name"="name_to_join")) %>% mutate(rate=x3pt_sfd_tot/x3pa)
   
@@ -718,15 +732,34 @@ salary_performance=left_join(contracts,
   mutate(percent_of_cap=salary/123655000) %>% filter(!is.na(vorp))
 #remove any player with <=4 years of experience (rookie contract), players w/lower salary than min (10-days)
 salary_performance %>% filter(experience > 4,salary>1017781) %>% 
-  arrange(desc(vorp_per_million))
+  arrange(desc(vorp_per_million)) %>% select(player,salary,vorp,vorp_per_million) %>% gt() %>% 
+  fmt_currency(columns=salary,use_subunits = FALSE) %>%
+  fmt_number(columns=vorp_per_million,decimals = 4)
 #remove players whose salary is less than 5% of cap
 salary_performance %>% filter(experience > 4,percent_of_cap>0.05) %>% 
-  arrange(desc(vorp_per_million))
+  arrange(desc(vorp_per_million)) %>% select(player,salary,vorp,vorp_per_million,percent_of_cap) %>% gt() %>% 
+  fmt_currency(columns=salary,use_subunits = FALSE) %>%
+  fmt_number(columns=vorp_per_million,decimals = 4) %>%
+  fmt_percent(columns=percent_of_cap)
 
 write_csv(salary_performance,"Output Data/Salary Overperformance.csv")
 ```
 
-## Rotation Awards
+## The Rotation Awards
+
+I value depth over one solitary star (it's a rotation after all). My attempt to make this more objective than past years:
+
+-   Get position estimates from Basketball-Reference
+
+    -   players with most minutes at PG & SG: guard
+
+    -   players with most minutes at SG & SF or SF & PF: wing
+
+    -   players with most minutes at PC & C: big
+
+    -   exceptions: all players greater than 7 foot are bigs and all players less than 6 foot are guards
+
+-   Rank teams based on highest positional VORP without positional VORP leader
 
 ```{r rotation,eval=FALSE}
 player_heights=tibble()
@@ -765,14 +798,79 @@ pos_percents_w_heights=play_by_play %>%
     .,
     read_csv("Data/Advanced.csv") %>% 
       filter(season==current_year, tm != "TOT") %>% 
-      select(seas_id:player,ows:vorp))
+      select(seas_id:player,ows:vorp)) %>% 
+  #remove players who are both big & small wing
+  group_by(player_id,tm,position_2) %>% slice(1) %>% ungroup()
 
 pos_percents_w_heights %>% filter(mp>50) %>% 
   ggplot(aes(x=full_in_ht,fill=position)) + 
   geom_bar() + dark_theme_grey()
 
-write_csv(pos_percents_w_heights %>% 
+vorp_leaders_by_team_pos=pos_percents_w_heights %>% 
             group_by(tm,position_2) %>% 
-            mutate(leader=if_else(max(vorp)==vorp,TRUE,FALSE)) %>% ungroup(),
+  slice_max(vorp,n=1,with_ties=FALSE) %>% 
+  mutate(leader=TRUE) %>% ungroup() %>% select(seas_id:player,tm,position_2,vorp,leader)
+
+pos_percents_w_leaders=left_join(pos_percents_w_heights,
+          vorp_leaders_by_team_pos) %>% 
+  replace_na(list(leader=FALSE)) %>% arrange(seas_id)
+
+write_csv(pos_percents_w_leaders,
           "Output Data/Player Positions.csv")
+
+team_pos_vorps_wo_leader=pos_percents_w_leaders %>% filter(!leader) %>% group_by(tm,position_2) %>% summarize(pos_vorp_wo_leader=sum(vorp)) %>% ungroup()
+
+pos_vorps_w_rotations=pos_percents_w_leaders %>% 
+  group_by(tm,position_2) %>% 
+  arrange(desc(vorp)) %>%
+  summarize(rotation=paste0(player,collapse=", ")) %>% 
+  ungroup() %>% select(tm,position_2,rotation) %>% 
+  left_join(.,team_pos_vorps_wo_leader) %>%
+  left_join(.,teams_w_conf)
+
+pos_vorp_leader_filter<-function(position,conf){
+  final_df<-pos_vorps_w_rotations %>% filter(position_2==position,conference==conf) %>% slice_max(pos_vorp_wo_leader,n=5) %>% select(tm,rotation,pos_vorp_wo_leader)
+}
+```
+
+### The Best Guard Rotation Award (sponsored by Buckingham Palace)
+
+East:
+
+```{r east_guards}
+pos_vorp_leader_filter("guard","East") %>% gt()
+```
+
+West:
+
+```{r west_guards}
+pos_vorp_leader_filter("guard","West") %>% gt()
+```
+
+### The Best Wing Rotation Award (co-sponsored by Lou Williams and Magic City)
+
+East:
+
+```{r east_wings}
+pos_vorp_leader_filter("wing","East") %>% gt()
+```
+
+West:
+
+```{r west_wings}
+pos_vorp_leader_filter("wing","West") %>% gt()
+```
+
+### The Best Big Rotation Award (jointly sponsored by Tom Hanks, Cadbury and Sex and the City)
+
+East:
+
+```{r east_bigs}
+pos_vorp_leader_filter("big","East") %>% gt()
+```
+
+West:
+
+```{r west_bigs}
+pos_vorp_leader_filter("big","West") %>% gt()
 ```
