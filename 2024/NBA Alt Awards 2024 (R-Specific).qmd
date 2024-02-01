@@ -18,6 +18,8 @@ packages=c("tidyverse",
            "RSelenium",
            "rvest",
            "polite",
+           "rJava",
+           "tabulizer",
            "janitor", # cleaning variable names
            "ggdark", # dark background plots
            "gt") # table creator
@@ -191,8 +193,8 @@ biggest decline from non-clutch FT% to clutch FT% (credit to Necessary_Career_25
 
 ```{r clutch_ft_worst}
 free_throws=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"Free Throw")|
-           str_detect(VISITORDESCRIPTION,"Free Throw"))
+  filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"Free Throw")))
 
 clutch_free_throws=free_throws %>% filter(clutch) %>% group_by(PLAYER1_NAME) %>%
   summarize(clutch_fts_attempted=n(),
@@ -235,11 +237,14 @@ most blocked dunks as the blocking player
 
 ```{r no_fly_zone}
 misses=pbp2024 %>% 
-  filter(str_starts(HOMEDESCRIPTION,"MISS")|str_starts(VISITORDESCRIPTION,"MISS"))
+  filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_starts(.,"MISS")))
 missed_dunks=misses %>% 
-  filter(str_detect(HOMEDESCRIPTION,"Dunk")|str_detect(VISITORDESCRIPTION,"Dunk"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"Dunk")))
 blocked_dunks=missed_dunks %>% 
-  filter(str_detect(HOMEDESCRIPTION,"BLOCK")|str_detect(VISITORDESCRIPTION,"BLOCK"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"BLOCK")))
 #as the blocker
 blocked_dunks %>% group_by(PLAYER3_NAME) %>% 
   summarize(count=n()) %>% slice_max(count,n=10) %>% gt()
@@ -267,14 +272,14 @@ pbp2024_w_next_play=pbp2024 %>%
          next_visitor_play=lead(VISITORDESCRIPTION)) %>% ungroup()
 
 blocks=pbp2024_w_next_play %>% 
-  filter(str_detect(HOMEDESCRIPTION,"BLOCK")|
-           str_detect(VISITORDESCRIPTION,"BLOCK")) %>%
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"BLOCK"))) %>%
   mutate(home_or_visitor_block=if_else(
     str_detect(HOMEDESCRIPTION,"BLOCK"),"home","visitor"))
 
 team_rebounds=pbp2024_w_next_play %>% 
-  filter(str_ends(HOMEDESCRIPTION,"Rebound")|
-           str_ends(VISITORDESCRIPTION,"Rebound"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_ends(.,"Rebound")))
 
 blocks_wo_team_rebs=anti_join(blocks,team_rebounds,by=c("GAME_ID","PERIOD","PCTIMESTRING")) %>% 
   mutate(recovered_by_which_team=case_when(
@@ -342,8 +347,8 @@ pbp2024_w_before_after=pbp2024 %>%
          last_player=lag(PLAYER1_ID)) %>% ungroup()
 
 shot_after_own_rebound_miss=pbp2024_w_before_after %>% 
-  filter(str_detect(HOMEDESCRIPTION,"REBOUND")|
-           str_detect(VISITORDESCRIPTION,"REBOUND")) %>%
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"REBOUND"))) %>%
   filter(PLAYER1_ID==next_player,PLAYER1_ID==last_player) %>%
   filter(str_detect(next_home_play,"PTS")|
            str_detect(next_visitor_play,"PTS")) %>% 
@@ -369,12 +374,12 @@ Most prolific alley-oop duo (credit to lactardenthusiast for the idea)
 ```{r alley_oops}
 #get alley oops
 alley_oops=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"Alley")|
-           str_detect(VISITORDESCRIPTION,"Alley"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"Alley")))
 #remove missed alley oop attempts
 made_alley_oops=alley_oops %>% 
-  filter(str_starts(HOMEDESCRIPTION,"MISS",negate=TRUE)| 
-           str_starts(VISITORDESCRIPTION,"MISS",negate=TRUE))
+  filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_starts(.,"MISS",negate=TRUE)))
 #remove alley oops that have missing 2nd player (self-alley oop or perhaps missing data?)
 made_alley_oops_complete=made_alley_oops %>% 
   filter(!is.na(PLAYER2_NAME)) %>% rowwise() %>% 
@@ -391,11 +396,11 @@ players that had the most games with 2+ dunks (credit to frosiano for the idea)
 
 ```{r two_plus_dunks}
 dunks=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"Dunk")|
-           str_detect(VISITORDESCRIPTION,"Dunk"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"Dunk")))
 missed_dunks=dunks %>%
-  filter(str_detect(HOMEDESCRIPTION,"MISS")| 
-           str_detect(VISITORDESCRIPTION,"MISS"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"MISS")))
 made_dunks=anti_join(dunks,missed_dunks)
 
 made_dunks %>% group_by(GAME_ID,PLAYER1_NAME) %>% summarize(dunks_in_game=n()) %>%
@@ -409,8 +414,8 @@ most charges committed (credit to Kdog122025 for the idea)
 
 ```{r bowling_ball}
 charges=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"Charge")|
-           str_detect(VISITORDESCRIPTION,"Charge"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"Charge")))
 
 charges %>% group_by(PLAYER1_NAME) %>% 
   summarize(count=n()) %>% ungroup() %>% slice_max(count,n=10) %>% gt()
@@ -422,8 +427,8 @@ most goaltends committed (credit to Kdog122025 for the idea)
 
 ```{r goaltends}
 goaltends=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"Goaltending")|
-           str_detect(VISITORDESCRIPTION,"Goaltending"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"Goaltending")))
 
 goaltends %>% group_by(PLAYER1_NAME) %>% 
   summarize(count=n()) %>% ungroup() %>% slice_max(count,n=10) %>% gt()
@@ -435,8 +440,8 @@ most kicked ball violations
 
 ```{r kicked_balls}
 kicked_balls=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"Kick")|
-           str_detect(VISITORDESCRIPTION,"Kick"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"Kick")))
 
 kicked_balls %>% group_by(PLAYER1_NAME) %>% 
   summarize(count=n()) %>% ungroup() %>% slice_max(count,n=10) %>% gt()
@@ -448,8 +453,8 @@ Player with the most illegal defense/defensive 3-second calls (credit to PsychoM
 
 ```{r def_3_seconds}
 def_3_seconds=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"3 Second")|
-           str_detect(VISITORDESCRIPTION,"3 Second"))
+    filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"3 Second")))
 
 def_3_seconds %>% group_by(PLAYER1_NAME) %>% 
   summarize(count=n()) %>% ungroup() %>% slice_max(count,n=10) %>% gt()
@@ -461,24 +466,24 @@ credit to watchingsongsDL, kingcobweb & An-Indian-In-The-NBA for the idea
 
 ```{r 3_pt_fouls_commit}
 
-third_free_throws=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"Free Throw 3 of 3")|
-           str_detect(VISITORDESCRIPTION,"Free Throw 3 of 3"))
+third_free_throws=pbp2024 %>%
+  filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"Free Throw 3 of 3")))
 
 shooting_fouls=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"S.FOUL")|
-           str_detect(VISITORDESCRIPTION,"S.FOUL"))
+  filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"S.FOUL")))
 
 fouls_on_missed_threes=inner_join(shooting_fouls,third_free_throws,
                                   by=c('GAME_ID','PERIOD','PCTIMESTRING'))
 
 three_pointers=pbp2024 %>% 
-  filter(str_detect(HOMEDESCRIPTION,"3PT")|
-           str_detect(VISITORDESCRIPTION,"3PT"))
+  filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_detect(.,"3PT")))
 
 made_threes=three_pointers %>% 
-  filter(str_starts(HOMEDESCRIPTION,"MISS",negate=TRUE)|
-           str_detect(VISITORDESCRIPTION,"MISS",negate=TRUE))
+  filter(if_any(c(HOMEDESCRIPTION,VISITORDESCRIPTION),
+                ~str_starts(.,"MISS",negate=TRUE)))
 
 fouls_on_made_threes=inner_join(shooting_fouls,made_threes,
                                   by=c('GAME_ID','PERIOD','PCTIMESTRING'))
@@ -537,7 +542,7 @@ preseason_odds=scrape(session) %>%
 
 preseason_odds %>% clean_names() %>% filter(str_detect(result,"under")) %>%
   mutate(wins=as.numeric(word(result,sep="-")),diff=w_l_o_u-wins) %>% 
-  slice_max(diff,n=3) %>% gt()
+  slice_max(diff,n=3) %>% select(-x) %>% gt()
 ```
 
 ## The "Paint Allergy" Award
@@ -555,7 +560,7 @@ left_join(advanced,per_game) %>%
 
 highest rate of 3-point shooting fouls drawn as percent of total 3-point attempts (PBPStats.com) (credit to OhTheGrandeur for suggesting the change to a rate stat)
 
-```{r master_baiter_scrape,results='hide',cache=TRUE}
+```{r master_baiter_scrape,results='hide'}
 driver<- rsDriver(browser=c("firefox"),port=4444L)
 remDr <- driver[["client"]]
 remDr$open()
@@ -565,7 +570,7 @@ a<-remDr$findElement(using="xpath",value='//*[contains(concat( " ", @class, " " 
 a$clickElement()
 Sys.sleep(10)
 a$clickElement()
-b<-remDr$findElement(using="xpath",value=paste0("//*/option[@value = '491']"))
+b<-remDr$findElement(using="xpath",value=paste0("//*/option[@value = '500']"))
 b$clickElement()
 
 ft_source=read_html(remDr$getPageSource()[[1]]) %>% 
@@ -590,7 +595,7 @@ rate_based_3pt_fouls_drawn=left_join(
       str_detect(player,"Reggie Bullock")~"Reggie Bullock Jr.",
       str_detect(player,"Harry Giles")~"Harry Giles III",
       str_detect(player,"Gregory Jackson II")~"GG Jackson",
-      str_detect(player,"KJ Martin")~"Kenyon Martin Jr.",
+      str_detect(player,"Jermaine Samuels")~"Jermaine Samuels Jr.",
       str_detect(player,"Jeenathan")~"Nate Williams",
       TRUE~stringi::stri_trans_general(str=player,id="Latin-ASCII"))),
   by=c("name"="name_to_join")) %>% mutate(rate=x3pt_sfd_tot/x3pa)
@@ -710,7 +715,7 @@ write_csv(full_join(on_off_diff,on_off_diff_trail) %>%
 
 contract overperformance by fewest contract \$ per 1 VORP (credit to memeticengineering for the idea)
 
-```{r stonks, eval=FALSE}
+```{r stonks_scrape,results='hide'}
 contracts=tibble()
 for (x in teams) {
   session=nod(bbref_bow,path=paste0("contracts/",x,".html"))
@@ -730,14 +735,21 @@ salary_performance=left_join(contracts,
   select(player,tm,experience,age,salary,vorp) %>% 
   mutate(vorp_per_million=vorp/salary*1000000) %>% 
   mutate(percent_of_cap=salary/123655000) %>% filter(!is.na(vorp))
+```
+
+```{r stonks_output}
 #remove any player with <=4 years of experience (rookie contract), players w/lower salary than min (10-days)
 salary_performance %>% filter(experience > 4,salary>1017781) %>% 
-  arrange(desc(vorp_per_million)) %>% select(player,salary,vorp,vorp_per_million) %>% gt() %>% 
+  arrange(desc(vorp_per_million)) %>% 
+  select(player,salary,vorp,vorp_per_million) %>% 
+  slice_max(vorp_per_million,n=10) %>% gt() %>% 
   fmt_currency(columns=salary,use_subunits = FALSE) %>%
   fmt_number(columns=vorp_per_million,decimals = 4)
 #remove players whose salary is less than 5% of cap
 salary_performance %>% filter(experience > 4,percent_of_cap>0.05) %>% 
-  arrange(desc(vorp_per_million)) %>% select(player,salary,vorp,vorp_per_million,percent_of_cap) %>% gt() %>% 
+  arrange(desc(vorp_per_million)) %>% 
+  select(player,salary,vorp,vorp_per_million,percent_of_cap) %>% 
+  slice_max(vorp_per_million,n=10) %>% gt() %>% 
   fmt_currency(columns=salary,use_subunits = FALSE) %>%
   fmt_number(columns=vorp_per_million,decimals = 4) %>%
   fmt_percent(columns=percent_of_cap)
@@ -761,7 +773,7 @@ I value depth over one solitary star (it's a rotation after all). My attempt to 
 
 -   Rank teams based on highest positional VORP without positional VORP leader
 
-```{r rotation,eval=FALSE}
+```{r rotation_heights_scrape,results='hide'}
 player_heights=tibble()
 for (x in teams) {
   session=nod(bbref_bow,path=paste0("teams/",x,"/",current_year,".html"))
@@ -777,6 +789,9 @@ final_heights=player_heights %>%
   separate(ht,into=c("ht_ft","ht_in"),convert=TRUE) %>% 
   mutate(full_in_ht=12*ht_ft+ht_in)
 
+```
+
+```{r final_rotation_awards,eval=TRUE}
 pos_percents_w_heights=play_by_play %>% 
   select(seas_id:player,pos,tm:c_percent) %>% filter(tm!="TOT") %>% 
   replace_na(list(pg_percent=0,sg_percent=0,sf_percent=0,
@@ -789,8 +804,8 @@ pos_percents_w_heights=play_by_play %>%
   group_by(seas_id) %>% slice_max(value,n=1) %>% ungroup() %>% 
   left_join(.,final_heights %>% select(-pos)) %>% 
   mutate(position=case_when(
-    full_in_ht>=84~"big_percent", #evan mobley classified as big_wing
-    full_in_ht<=72~"guard_percent", #markus howard classified as small_wing
+    full_in_ht>=84~"big_percent",
+    full_in_ht<=72~"guard_percent", 
     TRUE~position)) %>%
   #combine wing sizes into one
     mutate(position_2=word(position,sep="_")) %>%
@@ -802,9 +817,9 @@ pos_percents_w_heights=play_by_play %>%
   #remove players who are both big & small wing
   group_by(player_id,tm,position_2) %>% slice(1) %>% ungroup()
 
-pos_percents_w_heights %>% filter(mp>50) %>% 
-  ggplot(aes(x=full_in_ht,fill=position)) + 
-  geom_bar() + dark_theme_grey()
+#pos_percents_w_heights %>% filter(mp>50) %>% 
+#  ggplot(aes(x=full_in_ht,fill=position)) + 
+#  geom_bar() + dark_theme_grey()
 
 vorp_leaders_by_team_pos=pos_percents_w_heights %>% 
             group_by(tm,position_2) %>% 
@@ -828,8 +843,17 @@ pos_vorps_w_rotations=pos_percents_w_leaders %>%
   left_join(.,team_pos_vorps_wo_leader) %>%
   left_join(.,teams_w_conf)
 
+write_csv(pos_vorps_w_rotations,"Output Data/Rotations with Positional VORPS.csv")
+
 pos_vorp_leader_filter<-function(position,conf){
-  final_df<-pos_vorps_w_rotations %>% filter(position_2==position,conference==conf) %>% slice_max(pos_vorp_wo_leader,n=5) %>% select(tm,rotation,pos_vorp_wo_leader)
+  final_df<-pos_vorps_w_rotations %>% 
+    filter(position_2==position,conference==conf) %>% 
+    slice_max(pos_vorp_wo_leader,n=5) %>% 
+    left_join(.,pos_percents_w_leaders %>% 
+                select(tm,player,position_2,g,mp,vorp)) %>%
+    arrange(desc(pos_vorp_wo_leader),desc(vorp)) %>%
+    select(tm,player,g,mp,vorp,pos_vorp_wo_leader) %>% 
+    group_by(tm,pos_vorp_wo_leader)
 }
 ```
 
@@ -873,4 +897,36 @@ West:
 
 ```{r west_bigs}
 pos_vorp_leader_filter("big","West") %>% gt()
+```
+
+## The "I Gotta Coach AND Ref?" Award (presented by Ace Attorney Phoenix Wright)
+
+Best success rate on challenges (credit to xfinityhomeboy & sleepyfox1312 for the idea, from <https://official.nba.com/2023-24-nba-coachs-challenge-reviews/>)
+
+```{r challenges}
+nba_bow=bow("https://official.nba.com/",user_agent = "Sumitro Datta",force=TRUE,delay=10)
+session=nod(nba_bow,path="2023-24-nba-coachs-challenge-reviews/")
+
+coaches_challenge_by_day=scrape(session) %>% 
+  html_nodes("a") %>% html_attr("href") %>% tibble() %>%
+  rename(links=".") %>%
+  filter(str_detect(links,"Coachs-Challenge-By-Day")) %>% pull()
+
+challenge_tables=extract_tables(file=coaches_challenge_by_day)
+
+all_challenges=challenge_tables[[2]] %>% as_tibble(.name_repair = "minimal") %>% row_to_names(2) %>% clean_names()
+
+for (x in 3:length(challenge_tables)){
+  new_table=challenge_tables[[x]] %>% as_tibble(.name_repair = "minimal") %>% row_to_names(1) %>% clean_names()
+  all_challenges=bind_rows(all_challenges,new_table)
+}
+
+all_challenges %>% group_by(team_challenged) %>% 
+  summarize(num_challenges=n(),
+            successful_challenges=sum(str_detect(challenge_outcome,"Successful"),
+                                      na.rm = TRUE),
+            success_rate=successful_challenges/num_challenges) %>% 
+  arrange(desc(success_rate),desc(num_challenges)) %>% 
+  slice_max(success_rate,n=5) %>% gt() %>%
+  fmt_percent(columns=success_rate)
 ```
