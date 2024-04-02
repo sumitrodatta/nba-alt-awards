@@ -910,7 +910,8 @@ session=nod(nba_bow,path="2023-24-nba-coachs-challenge-reviews/")
 coaches_challenge_by_day=scrape(session) %>% 
   html_nodes("a") %>% html_attr("href") %>% tibble() %>%
   rename(links=".") %>%
-  filter(str_detect(links,"Coachs-Challenge-By-Day")) %>% pull()
+  distinct(links) %>%
+  filter(str_detect(links,"Coachs-Challenge")) %>% slice(1) %>% pull()
 
 challenge_tables=extract_tables(file=coaches_challenge_by_day)
 
