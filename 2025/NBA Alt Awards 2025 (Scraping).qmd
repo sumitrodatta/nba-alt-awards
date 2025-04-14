@@ -1,0 +1,378 @@
+---
+title: "NBA Alt Awards 2025 (Scraping)"
+author: "Sumitro Datta"
+format: pdf
+editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
+geometry:
+  - top=20mm
+  - left=15mm
+  - right=15mm
+---
+
+```{r load_pkgs, results="hide"}
+packages=c("tidyverse",
+           "RSelenium",
+           "rvest",
+           "polite",
+           "rJava",
+           "tabulapdf",
+           "teamcolors",
+           "janitor", # cleaning variable names
+           "ggdark", # dark background plots
+           "ggrepel", # repel text labels away from ggplot points
+           "gt") # table creator
+for (pkg in packages){
+  if(!require(pkg,character.only = TRUE)){
+    install.packages(pkg,repos = "http://cran.us.r-project.org")
+  }
+}
+```
+
+```{r data_load}
+current_year=2025
+
+totals=read_csv("Data/Player Totals.csv") %>% 
+  filter(season==current_year) %>%
+  #if player played for multiple teams in season, only take total row
+  mutate(tm=ifelse(tm=="TOT","1TOT",tm)) %>% 
+  group_by(player_id,season) %>% arrange(tm) %>% slice(1) %>% 
+  mutate(tm=ifelse(tm=="1TOT","TOT",tm)) %>% 
+  arrange(season,player) %>% ungroup()
+
+play_by_play=read_csv("Data/Player Play by Play.csv") %>% 
+  filter(season==current_year)
+
+team_info=read_csv("Data/Team Summaries.csv") %>% 
+  filter(season==current_year,!is.na(abbreviation)) %>% 
+  select(team,abbreviation)
+teams=team_info %>% pull(abbreviation)
+
+western_conf=c("DAL","DEN","GSW","HOU","LAC","LAL","MEM",
+               "MIN","NOP","OKC","PHO","POR","SAC","SAS",
+               "UTA")
+
+teams_w_conf=tibble(tm=teams) %>% 
+  mutate(conference=case_when(tm %in% western_conf~"West",
+                              TRUE~"East"))
+
+bbref_bow=bow("https://www.basketball-reference.com/",
+              user_agent = "Sumitro Datta",force=TRUE,delay = 10)
+```
+
+# Awards
+
+## The "Most Spectacular Self-Destruction" Award
+
+furthest deviation from preseason record over/unders (credit to Hockeyguy928 for the name)
+
+```{r self_destruct}
+session=nod(bbref_bow,path=paste0("leagues/NBA_",current_year,
+                                  "_preseason_odds.html"))
+preseason_odds=scrape(session) %>% 
+  html_nodes(xpath='//*[(@id = "NBA_preseason_odds")]') %>% 
+  html_table() %>% .[[1]]
+
+preseason_odds %>% clean_names() %>% filter(str_detect(result,"under")) %>%
+  mutate(wins=as.numeric(word(result,sep="-")),diff=w_l_o_u-wins) %>% 
+  slice_max(diff,n=3) %>% select(-x) %>% gt()
+```
+
+## The "I Gotta Coach AND Ref?" Award (presented by Ace Attorney Phoenix Wright)
+
+Best success rate on challenges (credit to xfinityhomeboy & sleepyfox1312 for the idea, from <https://official.nba.com/2023-24-nba-coachs-challenge-reviews/>)
+
+```{r challenges}
+nba_bow=bow("https://official.nba.com/",user_agent = "Sumitro Datta",force=TRUE,delay=10)
+session=nod(nba_bow,path="2024-25-nba-coachs-challenge-reviews/")
+
+coaches_challenge_by_day=scrape(session) %>% 
+  html_nodes("a") %>% html_attr("href") %>% tibble() %>%
+  rename(links=".") %>%
+  distinct(links) %>%
+  filter(str_detect(links,"Coachs-Challenges")) %>% slice(1) %>% pull()
+
+challenge_tables=tabulapdf::extract_tables(file=coaches_challenge_by_day)
+
+all_challenges=challenge_tables[[1]] %>% 
+  as_tibble(.name_repair = "minimal") %>%
+  clean_names()
+
+for (x in 2:length(challenge_tables)){
+  new_table=challenge_tables[[x]] %>% as_tibble(.name_repair = "minimal") %>% clean_names()
+  all_challenges=bind_rows(all_challenges,new_table)
+}
+
+challenges_team_summary=all_challenges %>% mutate(date=mdy(date)) %>%
+  filter(date>=mdy("10/24/2024")) %>%
+  group_by(team_challenged) %>% 
+  summarize(num_challenges=n(),
+            successful_challenges=sum(str_detect(challenge_outcome,"Successful"),
+                                      na.rm = TRUE),
+            success_rate=successful_challenges/num_challenges)
+
+challenges_team_summary %>% 
+  arrange(desc(success_rate),desc(num_challenges)) %>% 
+  slice_max(success_rate,n=5) %>% gt() %>%
+  fmt_percent(columns=success_rate)
+```
+
+```{r most_success_challenges}
+challenges_team_summary %>% 
+  arrange(desc(success_rate),desc(num_challenges)) %>% 
+  slice_max(successful_challenges,n=5) %>% gt() %>%
+  fmt_percent(columns=success_rate)
+```
+
+## The "Master Baiter" Award (sponsored by Bass Pro Shops & Kleenex)
+
+highest rate of 3-point shooting fouls drawn as percent of total 3-point attempts (PBPStats.com) (credit to OhTheGrandeur for suggesting the change to a rate stat)
+
+```{r master_baiter_scrape,results='hide'}
+driver<- rsDriver(browser=c("firefox"))
+remDr <- driver[["client"]]
+remDr$open()
+remDr$navigate("https://www.pbpstats.com/totals/nba/player?Season=2024-25&SeasonType=Regular%20Season&Type=Player&StatType=Totals&Table=FTs")
+Sys.sleep(20)
+a<-remDr$findElement(using="xpath",value='//*[contains(concat( " ", @class, " " ), concat( " ", "footer__row-count__select", " " ))]')
+a$clickElement()
+Sys.sleep(10)
+a$clickElement()
+b<-remDr$findElement(using="xpath",value=paste0("//*/option[.='All']"))
+b$clickElement()
+
+ft_source=read_html(remDr$getPageSource()[[1]]) %>% 
+  html_nodes("table") %>% .[[1]] %>% html_table() %>% 
+  select(-1) %>% rename_with(.fn=~word(.,1,sep="\n")) %>% slice(-1) %>% 
+  clean_names() %>% mutate(x3pt_sfd_tot=x3pt_sfd+x3pt_and_1s)
+
+remDr$close()
+driver$server$stop()
+```
+
+```{r master_baiter_output}
+rate_based_3pt_fouls_drawn=left_join(
+  ft_source %>% select(name,x3pt_sfd,x3pt_and_1s,x3pt_sfd_tot),
+  totals %>% select(seas_id:g,x3p,x3pa) %>% 
+    mutate(name_to_join=case_when(
+      str_detect(player,"Xavier Tillman")~"Xavier Tillman",
+      str_detect(player,"Marcus Morris")~"Marcus Morris Sr.",
+      str_detect(player,"Kevin Knox")~"Kevin Knox II",
+      str_detect(player,"Robert Williams")~"Robert Williams III",
+      str_detect(player,"A.J. Green")~"AJ Green",
+      str_detect(player,"Reggie Bullock")~"Reggie Bullock Jr.",
+      str_detect(player,"Harry Giles")~"Harry Giles III",
+      str_detect(player,"Jermaine Samuels")~"Jermaine Samuels Jr.",
+      str_detect(player,"Jeenathan")~"Nate Williams",
+      str_detect(player,"Alperen Şengün")~"Alperen Sengun",
+      str_detect(player,"Tristan Da Silva")~"Tristan da Silva",
+      str_detect(player,"Ron Holland")~"Ronald Holland II",
+      str_detect(player,"Vit Krejci")~"Vít Krejčí",
+      str_detect(player,"Brandon Boston Jr.")~"Brandon Boston",
+      str_detect(player,"Jeff Dowtin")~"Jeff Dowtin Jr.",
+      str_detect(player,"Monte Morris")~"Monté Morris",
+      str_detect(player,"GG Jackson II")~"GG Jackson",
+      str_detect(player,"Trey Jemison")~"Trey Jemison III",
+      str_detect(player,"Dante Exum")~"Danté Exum",
+      str_detect(player,"Lester Quiñones")~"Lester Quinones",
+      str_detect(player,"Pacome Dadiet")~"Pacôme Dadiet",
+      str_detect(player,"Jimmy Butler")~"Jimmy Butler III",
+      TRUE~player
+      )),
+  by=c("name"="name_to_join")) %>% mutate(rate=x3pt_sfd_tot/x3pa)
+  
+rate_based_3pt_fouls_drawn %>% filter(x3p/g>=1) %>% slice_max(rate,n=5) %>% 
+  select(name,tm,x3pt_sfd,x3pt_and_1s,x3pt_sfd_tot,x3pa,rate) %>% 
+  gt() %>% fmt_percent(columns=rate)
+```
+
+## The Stonks Award
+
+contract overperformance by fewest contract \$ per 1 VORP (credit to memeticengineering for the idea)
+
+```{r stonks_scrape,results='hide'}
+contracts=tibble()
+for (x in teams) {
+  session=nod(bbref_bow,path=paste0("contracts/",x,".html"))
+  teams_contracts=scrape(session) %>% 
+    html_nodes(xpath='//*[(@id = "contracts")]') %>% 
+    html_table() %>% .[[1]] %>% row_to_names(row_number=1) %>% clean_names() %>% 
+    filter(age != "",x2024_25 != "") %>% 
+    select(player,x2024_25) %>% rename(salary=x2024_25) %>% 
+    mutate(salary=parse_number(salary),tm=x)
+  contracts=bind_rows(contracts,teams_contracts)
+  print(x)
+}
+
+salary_performance=left_join(contracts,
+                             read_csv("Data/Advanced.csv") %>% 
+                               filter(season==current_year)) %>% 
+  select(player,tm,experience,age,salary,vorp) %>% 
+  mutate(vorp_per_million=vorp/salary*1000000) %>% 
+  mutate(percent_of_cap=salary/140588000) %>% filter(!is.na(vorp))
+```
+
+```{r stonks_output}
+#remove any player with <=4 years of experience (rookie contract), players w/lower salary than min (10-days)
+salary_performance %>% filter(experience > 4,salary>1157153) %>% 
+  arrange(desc(vorp_per_million)) %>% 
+  select(player,salary,vorp,vorp_per_million) %>% 
+  slice_max(vorp_per_million,n=10) %>% gt() %>% 
+  fmt_currency(columns=salary,use_subunits = FALSE) %>%
+  fmt_number(columns=vorp_per_million,decimals = 4)
+#remove players whose salary is less than 5% of cap
+salary_performance %>% filter(experience > 4,percent_of_cap>0.05) %>% 
+  arrange(desc(vorp_per_million)) %>% 
+  select(player,salary,vorp,vorp_per_million,percent_of_cap) %>% 
+  slice_max(vorp_per_million,n=10) %>% gt() %>% 
+  fmt_currency(columns=salary,use_subunits = FALSE) %>%
+  fmt_number(columns=vorp_per_million,decimals = 4) %>%
+  fmt_percent(columns=percent_of_cap)
+
+write_csv(salary_performance,"Output Data/Salary Overperformance.csv")
+```
+
+## The Rotation Awards
+
+I value depth over one solitary star (it's a rotation after all). My attempt to make this more objective than past years:
+
+-   Get position estimates from Basketball-Reference
+
+    -   players with most minutes at PG & SG: guard
+
+    -   players with most minutes at SG & SF or SF & PF: wing
+
+    -   players with most minutes at PC & C: big
+
+    -   exceptions: all players greater than 7 foot are bigs and all players less than 6 foot are guards
+
+-   Rank teams based on highest positional VORP without positional VORP leader
+
+```{r rotation_heights_scrape,results='hide'}
+player_heights=tibble()
+for (x in teams) {
+  session=nod(bbref_bow,path=paste0("teams/",x,"/",current_year,".html"))
+  team_heights=scrape(session) %>% html_nodes(css="#all_roster") %>% 
+    html_table() %>% .[[1]] %>% 
+    clean_names() %>% select(player:wt)
+  player_heights=bind_rows(player_heights,team_heights)
+  print(x)
+}
+
+final_heights=player_heights %>% 
+  mutate(player=str_trim(word(player,sep="\\(TW\\)"))) %>%
+  separate(ht,into=c("ht_ft","ht_in"),convert=TRUE) %>% 
+  mutate(full_in_ht=12*ht_ft+ht_in)
+
+```
+
+```{r final_rotation_awards,eval=TRUE}
+pos_percents_w_heights=play_by_play %>% 
+  select(seas_id:player,pos,tm:c_percent) %>% filter(tm!="TOT") %>% 
+  replace_na(list(pg_percent=0,sg_percent=0,sf_percent=0,
+                  pf_percent=0,c_percent=0)) %>%
+  mutate(guard_percent=pg_percent+sg_percent,
+         wing_small_percent=sg_percent+sf_percent,
+         wing_big_percent=sf_percent+pf_percent,
+         big_percent=pf_percent+c_percent) %>% 
+  pivot_longer(cols=guard_percent:big_percent,names_to="position") %>%
+  group_by(seas_id) %>% slice_max(value,n=1) %>% ungroup() %>% 
+  left_join(.,final_heights %>% select(-pos)) %>% 
+  mutate(position=case_when(
+    full_in_ht>=84~"big_percent",
+    full_in_ht<=72~"guard_percent", 
+    TRUE~position)) %>%
+  #combine wing sizes into one
+    mutate(position_2=word(position,sep="_")) %>%
+  left_join(
+    .,
+    read_csv("Data/Advanced.csv") %>% 
+      filter(season==current_year, tm != "TOT") %>% 
+      select(seas_id:player,ows:vorp)) %>% 
+  #remove players who are both big & small wing
+  group_by(player_id,tm,position_2) %>% slice(1) %>% ungroup()
+
+#pos_percents_w_heights %>% filter(mp>50) %>% 
+#  ggplot(aes(x=full_in_ht,fill=position)) + 
+#  geom_bar() + dark_theme_grey()
+
+vorp_leaders_by_team_pos=pos_percents_w_heights %>% 
+            group_by(tm,position_2) %>% 
+  slice_max(vorp,n=1,with_ties=FALSE) %>% 
+  mutate(leader=TRUE) %>% ungroup() %>% select(seas_id:player,tm,position_2,vorp,leader)
+
+pos_percents_w_leaders=left_join(pos_percents_w_heights,
+          vorp_leaders_by_team_pos) %>% 
+  replace_na(list(leader=FALSE)) %>% arrange(seas_id)
+
+write_csv(pos_percents_w_leaders,
+          "Output Data/Player Positions.csv")
+
+team_pos_vorps_wo_leader=pos_percents_w_leaders %>% filter(!leader) %>% group_by(tm,position_2) %>% summarize(pos_vorp_wo_leader=sum(vorp)) %>% ungroup()
+
+pos_vorps_w_rotations=pos_percents_w_leaders %>% 
+  group_by(tm,position_2) %>% 
+  arrange(desc(vorp)) %>%
+  summarize(rotation=paste0(player,collapse=", ")) %>% 
+  ungroup() %>% select(tm,position_2,rotation) %>% 
+  left_join(.,team_pos_vorps_wo_leader) %>%
+  left_join(.,teams_w_conf)
+
+write_csv(pos_vorps_w_rotations,"Output Data/Rotations with Positional VORPS.csv")
+
+pos_vorp_leader_filter<-function(position,conf){
+  final_df<-pos_vorps_w_rotations %>% 
+    filter(position_2==position,conference==conf) %>% 
+    slice_max(pos_vorp_wo_leader,n=5) %>% 
+    left_join(.,pos_percents_w_leaders %>% 
+                select(tm,player,position_2,g,mp,vorp)) %>%
+    arrange(desc(pos_vorp_wo_leader),desc(vorp)) %>%
+    select(tm,player,g,mp,vorp,pos_vorp_wo_leader) %>% 
+    group_by(tm,pos_vorp_wo_leader)
+}
+```
+
+### The Best Guard Rotation Award (sponsored by Buckingham Palace)
+
+East:
+
+```{r east_guards}
+pos_vorp_leader_filter("guard","East") %>% gt()
+```
+
+West:
+
+```{r west_guards}
+pos_vorp_leader_filter("guard","West") %>% gt()
+```
+
+### The Best Wing Rotation Award (co-sponsored by Lou Williams and Magic City)
+
+East:
+
+```{r east_wings}
+pos_vorp_leader_filter("wing","East") %>% gt()
+```
+
+West:
+
+```{r west_wings}
+pos_vorp_leader_filter("wing","West") %>% gt()
+```
+
+### The Best Big Rotation Award (jointly sponsored by Tom Hanks, Cadbury and Sex and the City)
+
+East:
+
+```{r east_bigs}
+pos_vorp_leader_filter("big","East") %>% gt()
+```
+
+West:
+
+```{r west_bigs}
+pos_vorp_leader_filter("big","West") %>% gt()
+```

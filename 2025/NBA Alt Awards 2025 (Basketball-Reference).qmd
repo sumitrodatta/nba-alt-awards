@@ -1,0 +1,358 @@
+---
+title: "NBA Alt Awards 2025 (Basketball-Reference)"
+author: "Sumitro Datta"
+format: pdf
+editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
+geometry:
+  - top=20mm
+  - left=15mm
+  - right=15mm
+---
+
+```{r load_pkgs, results="hide"}
+packages=c("tidyverse",
+           "janitor", # cleaning variable names
+           "gt") # table creator
+for (pkg in packages){
+  if(!require(pkg,character.only = TRUE)){
+    install.packages(pkg,repos = "http://cran.us.r-project.org")
+  }
+}
+```
+
+```{r data_load}
+current_year=2025
+
+advanced=read_csv("Data/Advanced.csv") %>% 
+  filter(season==current_year) %>%
+  #if player played for multiple teams in season, only take total row
+  mutate(tm=ifelse(tm=="TOT","1TOT",tm)) %>% 
+  group_by(player_id,season) %>% arrange(tm) %>% slice(1) %>% 
+  mutate(tm=ifelse(tm=="1TOT","TOT",tm)) %>% 
+  arrange(season,player) %>% ungroup()
+per_game=read_csv("Data/Player Per Game.csv") %>% 
+  filter(season==current_year) %>%
+  #if player played for multiple teams in season, only take total row
+  mutate(tm=ifelse(tm=="TOT","1TOT",tm)) %>% 
+  group_by(player_id,season) %>% arrange(tm) %>% slice(1) %>% 
+  mutate(tm=ifelse(tm=="1TOT","TOT",tm)) %>% 
+  arrange(season,player) %>% ungroup()
+totals=read_csv("Data/Player Totals.csv") %>% 
+  filter(season==current_year) %>%
+  #if player played for multiple teams in season, only take total row
+  mutate(tm=ifelse(tm=="TOT","1TOT",tm)) %>% 
+  group_by(player_id,season) %>% arrange(tm) %>% slice(1) %>% 
+  mutate(tm=ifelse(tm=="1TOT","TOT",tm)) %>% 
+  arrange(season,player) %>% ungroup()
+shooting=read_csv("Data/Player Shooting.csv") %>% 
+  filter(season==current_year) %>%
+  #if player played for multiple teams in season, only take total row
+  mutate(tm=ifelse(tm=="TOT","1TOT",tm)) %>% 
+  group_by(player_id,season) %>% arrange(tm) %>% slice(1) %>% 
+  mutate(tm=ifelse(tm=="1TOT","TOT",tm)) %>% 
+  arrange(season,player) %>% ungroup()
+
+team_summaries=read_csv("Data/Team Summaries.csv") %>% 
+  filter(season==current_year) 
+team_wl=team_summaries %>% mutate(g_total=w+l) %>% 
+  rename(tm=abbreviation) %>% select(season,tm,g_total) %>% head(.,-1) %>% 
+  add_row(season=current_year,tm="TOT",g_total=mean(.$g_total))
+play_by_play=read_csv("Data/Player Play by Play.csv") %>% 
+  filter(season==current_year)
+```
+
+# Awards
+
+## The Real Sixth Man of the Year (presented by Brent Barry)\*
+
+Sixth Man winners if sixth to ninth on team in minutes played, must have played more than 50% of games and started less than 50% of games (credit to KokiriEmerald for the reasoning behind re-implementing the starting criteria)
+
+```{r real_smoy}
+
+smoy_candidates=advanced %>% left_join(.,per_game) %>%
+  left_join(.,team_wl) %>% mutate(g_percent=g/g_total,gs_percent=gs/g) %>% 
+  filter(g_percent>=0.5,tm != "TOT") %>% 
+  filter(!is.na(mp_per_game)) %>% arrange(desc(mp_per_game)) %>% 
+  group_by(tm,season) %>% slice(6:9) %>% ungroup() %>%
+  filter(gs_percent<=0.5)
+
+smoy_candidates %>% slice_max(pts_per_game,n=5) %>% 
+  select(player,tm,g,gs,mp_per_game,pts_per_game) %>% gt() %>%
+  as_raw_html()
+
+smoy_candidates %>% slice_max(vorp,n=5) %>% 
+  select(player,tm,g,gs,mp_per_game,vorp) %>% gt() %>%
+  as_raw_html()
+```
+
+## The Deadshot Award (presented by Ray Allen/Reggie Miller)
+
+best qualifying 3 point percentage (Basketball-Reference)
+
+```{r deadshot}
+
+totals %>% filter(x3p>=82) %>% mutate(x3p_per_game=round(x3p/g,1)) %>%
+  slice_max(x3p_percent,n=5) %>% select(player,tm,x3p_per_game,x3p_percent) %>% 
+  gt() %>% fmt_percent(columns=x3p_percent) %>%
+  as_raw_html()
+
+# per_game %>% left_join(.,team_wl) %>% 
+#   filter(x3p_per_game>=1,x3p_per_game*(82-g_total+g)>82) %>%
+#   #filter(x3p_per_game*g>82) %>%
+#   slice_max(x3p_percent,n=5) %>% select(player,tm,x3p_per_game,x3p_percent) %>% 
+#   gt() %>% fmt_percent(columns=x3p_percent) %>%
+#   as_raw_html()
+```
+
+## The Stormtrooper Award
+
+worst qualifying 2 point percentage (Basketball-Reference)
+
+```{r stormtrooper}
+per_game %>% left_join(.,team_wl) %>% 
+  #filter(fg_per_game*(82-g_total+g)>=300,fg_per_game>=300/82) %>%
+  filter(fg_per_game*g>=300) %>%
+  slice_min(x2p_percent,n=5) %>% select(player,tm,x2p_per_game,x2p_percent) %>% 
+  gt() %>% fmt_percent(columns=x2p_percent) %>%
+  as_raw_html()
+```
+
+## The "If He Dies, He Dies" Award (presented by Tom Thibodeau, sponsored by Ivan Drago)
+
+most minutes played per game (Basketball-Reference) (credit to FurryCrew for the idea)
+
+```{r he_dies_mpg}
+per_game %>% left_join(.,team_wl) %>% mutate(g_percent=g/g_total) %>% 
+  filter(g_percent>=0.7) %>%
+  slice_max(mp_per_game,n=5) %>% select(player,tm,mp_per_game) %>% gt() %>%
+  as_raw_html()
+```
+
+alternatively: most total minutes played (Basketball-Reference) (credit to FrankEMartindale for the idea)
+
+```{r he_dies_total_mp}
+totals %>% left_join(.,team_wl) %>% 
+  mutate(g_percent=g/g_total) %>% 
+  filter(g_percent>=0.7) %>% slice_max(mp,n=5) %>% 
+  select(player,tm,mp) %>% gt() %>%
+  as_raw_html()
+```
+
+## The Black Hole Award
+
+most FGAs per assist (credit to Moose4KU for the idea)
+
+```{r black_hole}
+field_goals_per_ast=totals %>%
+  left_join(.,team_wl) %>% mutate(g_percent=g/g_total) %>% 
+  filter(g_percent>=0.5) %>% mutate(fga_per_ast=fga/ast) %>%
+  select(player,tm,g,mp,fga,ast,fga_per_ast)
+
+field_goals_per_ast %>%
+  slice_max(fga_per_ast,n=5) %>% 
+  arrange(desc(fga_per_ast),desc(fga),desc(mp)) %>% gt() %>%
+  as_raw_html()
+```
+
+## The Hot Potato Award
+
+fewest FGAs per assist (credit to Moose4KU for the idea & ajayod for the name)
+
+```{r hot_potato}
+field_goals_per_ast %>%
+  slice_min(fga_per_ast,n=5) %>% arrange(fga_per_ast,desc(fga),desc(mp)) %>% gt() %>%
+  as_raw_html()
+```
+
+## The Most Expendable Player Award (sponsored by the National Basketball Referees Association)
+
+highest personal fouls per 36 minutes (credit to PsychoM & BrightGreenLED for the idea)
+
+```{r most_expendable}
+totals %>%
+  left_join(.,team_wl) %>% mutate(g_percent=g/g_total) %>% 
+  filter(g_percent>=0.5,mp/g>=12) %>% 
+  mutate(fouls_per_36_minutes=pf/mp*36) %>% 
+  select(player,tm,mp,pf,fouls_per_36_minutes) %>%
+  slice_max(fouls_per_36_minutes,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Paint Allergy" Award
+
+players with the highest percentage of 3FGA of their total field goal attempts (credit to frosiano for the idea)
+
+```{r paint_allergy}
+inner_join(totals %>% filter(fg>=300) %>% select(player_id),shooting) %>%
+  mutate(percent_fga_outside_10_ft=1-
+           percent_fga_from_x0_3_range-
+           percent_fga_from_x3_10_range) %>%
+  slice_max(percent_fga_outside_10_ft,n=5) %>%
+  select(player,tm,percent_fga_outside_10_ft) %>%
+  gt() %>% fmt_percent(columns=percent_fga_outside_10_ft) %>%
+  as_raw_html()
+
+# left_join(advanced,per_game) %>% 
+#   filter(x3p_per_game*g>82,x3p_per_game>=1) %>%
+#   slice_max(x3p_ar,n=5) %>%
+#   select(player,tm,x3p_ar) %>% 
+#   gt() %>% fmt_percent(columns=x3p_ar) %>%
+#   as_raw_html()
+```
+
+## The Weakest Link award (sponsored by Jack Link's Beef Jerky, presented by the 2015 Atlanta Hawks Starting 5)\*
+
+best 5th starter (must have started 50% of a team's games, team must have at least 3 qualifying players) (credit to memeticengineering for the idea)
+
+```{r weakest_link}
+best_worst_starter_candidates=advanced %>% left_join(.,per_game) %>%
+  left_join(.,team_wl) %>% mutate(start_percent=gs/g_total) %>%
+  filter(start_percent>=0.5,tm !="TOT") %>% 
+  mutate(mp_per_game=mp/g,.after="mp") %>% 
+  group_by(tm,season) %>%
+  filter(n()>2) %>%
+  select(player,pos,tm,g_total,gs,mp_per_game,vorp) %>%
+  slice_min(vorp) %>%
+  ungroup()
+
+best_worst_starter_candidates %>% 
+  slice_max(vorp,n=5) %>% 
+  select(player,pos,tm,g_total,gs,mp_per_game,vorp) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Don't Check the Box Score" Award
+
+teams that most over performed their Pythagorean record (credit to OhTheGrandeur for the idea)
+
+```{r pyth_overperform}
+team_summaries %>% mutate(pyth_diff=w-pw) %>% 
+  slice_max(pyth_diff,n=3) %>% select(team,w,pw) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Dude, Check the Box Score" Award
+
+teams that most under performed their Pythagorean record (credit to OhTheGrandeur for the idea)
+
+```{r pyth_underperform}
+team_summaries %>% mutate(pyth_diff=w-pw) %>% 
+  slice_min(pyth_diff,n=3) %>% select(team,w,pw) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "[This Game Has Always Been, And Will Always Be, About Buckets](https://www.youtube.com/watch?v=-xYejfYxT4s)" Award
+
+highest points as percentage of counting stats (rebounds, assists, steals, blocks)
+
+```{r all_about_buckets}
+pts_as_percent_counting_stats=per_game %>% left_join(.,team_wl) %>% 
+  mutate(g_percent=g/g_total) %>% filter(g_percent>=0.7) %>% 
+  mutate(pts_as_percent_of_other_stats=pts_per_game/(pts_per_game+trb_per_game+ast_per_game+stl_per_game+blk_per_game))
+
+pts_as_percent_counting_stats %>% 
+  slice_max(pts_as_percent_of_other_stats,n=5) %>% 
+  select(player,tm,pts_per_game,trb_per_game,ast_per_game,stl_per_game,blk_per_game,pts_as_percent_of_other_stats) %>% 
+  gt() %>% fmt_percent(columns=pts_as_percent_of_other_stats) %>%
+  cols_label(pts_per_game="PTS",trb_per_game="TRB",ast_per_game="AST",
+             stl_per_game="STL",blk_per_game="BLK",
+             pts_as_percent_of_other_stats="PTS as % of Other Stats") %>% 
+  tab_spanner(label="Per Game",
+              columns=pts_per_game:blk_per_game)
+
+write_csv(pts_as_percent_counting_stats %>% 
+            select(player,pts_per_game,trb_per_game,ast_per_game,
+                   stl_per_game,blk_per_game,pts_as_percent_of_other_stats),
+          "Output Data/Points as Percent of Counting Stats.csv")
+```
+
+## The Empty Calorie Stats Award (sponsored by Pop-Tarts)
+
+highest percentile rank within position in usage, descending VORP, descending TS% (credit to eewap for the idea)
+
+```{r empty_stats}
+empty_stats_df=advanced %>% 
+  left_join(.,team_wl) %>% 
+  mutate(g_percent=g/g_total) %>% filter(g_percent>=0.5) %>%
+  mutate(pos=word(pos,sep="-")) %>% group_by(pos) %>%
+    mutate(ts_rank=percent_rank(desc(ts_percent)),
+           usg_rank=percent_rank(usg_percent),
+           vorp_rank=percent_rank(desc(vorp)),
+           empty_stats=ts_rank+usg_rank+vorp_rank) %>% ungroup()
+
+empty_stats_df %>% 
+  slice_max(empty_stats,n=5) %>% 
+  select(player,pos,tm,ts_percent,usg_percent,vorp,ts_rank:empty_stats) %>% 
+  gt() %>% fmt_percent(columns=c(ts_percent,ts_rank:empty_stats)) %>%
+  cols_label(ts_percent="TS %",usg_percent="USG %",
+             ts_rank="TS", usg_rank="USG",vorp_rank="VORP") %>%
+  tab_spanner(label="Percentile Rank",
+              columns=ts_rank:vorp_rank)
+
+write_csv(empty_stats_df %>% 
+            select(player,pos:experience,ts_percent,usg_percent,vorp,ts_rank:empty_stats),"Output Data/Empty Stats.csv")
+```
+
+## The "Can't Win With These Cats" Award (sponsored by Scar from The Lion King, presented by Kevin Durant in a fake mustache)\*
+
+highest difference in on/off splits in weighted average with and without best (credit to eewap for the idea and ToparBull for the change from median)
+
+```{r high_on_off}
+pbp_filtered=play_by_play %>% filter(tm !="TOT") %>% 
+  left_join(.,team_wl) %>% mutate(g_percent=g/g_total) %>% 
+  filter(g_percent>=0.5,mp/g>=10) %>%
+  group_by(tm) %>% 
+  mutate(tm_avg_weight_npm=sum(net_plus_minus_per_100_poss*mp/g)/sum(mp/g)) %>% 
+  ungroup()
+
+on_off_leaders=pbp_filtered %>% group_by(tm) %>%
+  slice_max(net_plus_minus_per_100_poss) %>% ungroup() %>% 
+  select(seas_id:player,tm:mp,net_plus_minus_per_100_poss,
+         g_percent,tm_avg_weight_npm)
+
+on_off_avg_wo_leader=pbp_filtered %>% group_by(tm) %>% 
+  arrange(desc(net_plus_minus_per_100_poss)) %>%
+  slice(-1) %>% 
+  summarize(avg_wo_leader=sum(net_plus_minus_per_100_poss*mp/g)/sum(mp/g))
+
+on_off_diff=left_join(on_off_leaders,on_off_avg_wo_leader) %>% 
+  mutate(npm_diff=tm_avg_weight_npm-avg_wo_leader)
+
+on_off_diff %>% slice_max(npm_diff,n=5) %>% 
+  select(player:npm_diff) %>% select(-g_percent) %>% 
+  gt() %>% 
+  cols_label(net_plus_minus_per_100_poss="NPM/100 Poss") %>%
+  as_raw_html()
+```
+
+## The "Anchors Aweigh" Award (presented by Ron Burgundy)\*
+
+biggest difference in on/off splits in weighted average with and without worst
+
+```{r low_on_off}
+on_off_trailers=pbp_filtered %>% group_by(tm) %>%
+  slice_min(net_plus_minus_per_100_poss) %>% ungroup() %>% 
+  select(seas_id:player,tm:mp,net_plus_minus_per_100_poss,
+         g_percent,tm_avg_weight_npm)
+
+on_off_avg_wo_trailer=pbp_filtered %>% group_by(tm) %>% 
+  arrange(net_plus_minus_per_100_poss) %>%
+  slice(-1) %>% 
+  summarize(avg_wo_trailer=sum(net_plus_minus_per_100_poss*mp)/sum(mp))
+
+on_off_diff_trail=left_join(on_off_trailers,on_off_avg_wo_trailer) %>% 
+  mutate(npm_diff=tm_avg_weight_npm-avg_wo_trailer)
+
+on_off_diff_trail %>% slice_min(npm_diff,n=5) %>% 
+  select(player:npm_diff) %>% select(-g_percent) %>% 
+  gt() %>% 
+  cols_label(net_plus_minus_per_100_poss="NPM/100 Poss") %>%
+  as_raw_html()
+
+write_csv(full_join(on_off_diff,on_off_diff_trail) %>% 
+            select(season,player:avg_wo_trailer),"Output Data/On-Off Difference With & Without Extreme Player.csv")
+```
