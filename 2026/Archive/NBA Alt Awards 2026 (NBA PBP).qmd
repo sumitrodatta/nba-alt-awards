@@ -1,0 +1,767 @@
+---
+title: "NBA Alt Awards 2026 (NBA PBP)"
+author: "Sumitro Datta"
+format: 
+  pdf:
+    include-in-header: 
+      text: |
+        \usepackage{typearea}
+editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
+geometry:
+  - top=20mm
+  - left=15mm
+  - right=15mm
+---
+
+```{r load_pkgs, results="hide"}
+pacman::p_load("tidyverse","hoopR","janitor","gt")
+```
+
+```{r full_pbp_load}
+current_year=2026
+current_year_for_pbp=paste0(current_year-1,"-",str_sub(current_year,-2))
+pbp_curr_yr=read_csv(paste0("Data/",current_year_for_pbp,"_pbp.csv")) %>% 
+  group_by(gameId) %>% 
+  fill(scoreHome,scoreAway) %>%
+  mutate(scoreMargin=scoreHome-scoreAway,.after=scoreAway) %>%
+  mutate(clutch=(
+    (period>4)|
+      (period==4 & abs(scoreMargin)<=5 & clock<='PT05')
+    )) %>%
+  ungroup() %>%
+  # remove allstar weekend
+  filter(str_starts(as.character(gameId),'3',negate = TRUE))
+```
+
+```{r hoopr_info}
+compact_standings=nba_leaguestandingsv3()$Standings %>% 
+  type_convert() %>%
+  select(TeamID,TeamCity,TeamName,Conference,Division,WINS,LOSSES) %>% 
+  mutate(TeamGP=WINS+LOSSES,TeamFullName=paste(TeamCity,TeamName))
+
+player_bio=
+  nba_leaguedashplayerbiostats()$LeagueDashPlayerBioStats %>% 
+  select(PLAYER_ID:GP) %>%
+  type_convert()
+
+team_info=left_join(compact_standings,
+          player_bio %>% 
+            group_by(TEAM_ID) %>% 
+            slice(1) %>% 
+            select(TEAM_ID,TEAM_ABBREVIATION), 
+          by=join_by(TeamID==TEAM_ID))
+
+player_stats=nba_leaguedashplayerstats()$LeagueDashPlayerStats %>% 
+  type_convert()
+
+player_w_gp_percentages=left_join(
+  player_bio,
+  compact_standings %>% select(contains("Team")),
+  by=join_by(TEAM_ID==TeamID)
+  ) %>%
+  left_join(.,
+            player_stats %>% select(PLAYER_ID,MIN)) %>%
+  mutate(G_PERCENT=GP/TeamGP)
+
+rm(compact_standings,player_bio,player_stats)
+```
+
+# Awards
+
+## The "Imma Make 'Em Both" Award (presented by Diar DeRozan & Grant Williams)\*
+
+biggest decline from non-clutch FT% to clutch FT%, min 10 clutch FTA (credit to Necessary_Career_253 for the idea and midnightgreen29 for the name)
+
+```{r clutch_ft_worst}
+free_throws=pbp_curr_yr %>% 
+  filter(str_detect(description,"Free Throw"))
+
+ft_div_by_clutch=free_throws %>% 
+  group_by(personId,playerNameI,clutch) %>%
+  summarize(fts_attempted=n(),
+            fts_missed=sum(str_detect(description,"MISS"),
+                                  na.rm=TRUE),
+            ft_percent=1-fts_missed/fts_attempted) %>% 
+  ungroup() %>%
+  mutate(clutch=if_else(clutch,"clutch","non_clutch")) %>%
+  pivot_wider(names_from=clutch,
+              values_from=fts_attempted:ft_percent,
+              values_fill=0,
+              names_glue = "{clutch}_{.value}") %>%
+  mutate(differential=clutch_ft_percent-non_clutch_ft_percent) %>%
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId) %>% select(-playerNameI)
+  
+write_csv(ft_div_by_clutch,
+          "Output Data/Clutch Free Throw Differential.csv")
+
+ft_div_by_clutch %>% filter(clutch_fts_attempted>=10) %>%
+  slice_min(differential,n=5) %>% 
+  select(player_name,clutch_fts_attempted,
+         clutch_ft_percent,non_clutch_ft_percent,differential) %>%
+  gt() %>% 
+  fmt_percent(columns=-c(player_name,clutch_fts_attempted)) %>%
+  as_raw_html()
+```
+
+## The "Ice, Ice, Baby" Award (sponsored by Hisense, presented by Vanilla Ice)\*
+
+biggest improvement from non-clutch FT% to clutch FT%, min 10 clutch FTA
+
+```{r clutch_ft_best}
+ft_div_by_clutch %>% filter(clutch_fts_attempted>=10) %>%
+  slice_max(differential,n=5) %>% 
+  select(player_name,clutch_fts_attempted,
+         clutch_ft_percent,non_clutch_ft_percent,differential) %>%
+  gt() %>% 
+  fmt_percent(columns=-c(player_name,clutch_fts_attempted)) %>%
+  as_raw_html()
+```
+
+## The "Chicken Supplier" Award (sponsored by Los Pollos Hermanos)
+
+most pairs of free throws missed by a visiting player in the second half (credit to livejamie for the idea)
+
+```{r chicken_supplier}
+missed_visitor_ft_in_second_half=pbp_curr_yr %>%
+  filter(actionType=="Free Throw",
+         #only misses
+         str_starts(description,"MISS"),
+         #visitor
+         location=="v",
+         #second half
+         period>2,
+         #multiple free throws (not and-1s or sole technicals/flagrants)
+         str_ends(subType,"2|3"))
+
+missed_visitor_ft_in_second_half %>%
+  #free throw groups have same game clock time
+  group_by(personId,playerNameI,gameId,clock,period) %>% 
+  summarize(n=n()) %>%
+  #filter for multiple misses at same time
+  filter(n>1) %>%
+  group_by(personId,playerNameI) %>%
+  summarize(missed_ft_pairs=n()) %>%
+  ungroup() %>%
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId) %>% 
+  select(-c(playerNameI,personId)) %>%
+  slice_max(missed_ft_pairs,n=5) %>% 
+  gt() %>%
+  as_raw_html()
+```
+
+## The "Rent-Free" Award (presented by Monica Geller)
+
+team that shoots the most technical/flagrant FTAs (credit to Drummallumin for the idea)
+
+```{r rent_free}
+flagrant_tech_fts=pbp_curr_yr %>% 
+    filter(
+      str_detect(subType,"Free Throw Technical|Free Throw Flagrant")
+      ) %>%
+  group_by(teamTricode) %>%
+  summarize(tech_ft=sum(str_detect(subType,"Free Throw Technical")),
+            flagrant_ft=sum(str_detect(subType,"Free Throw Flagrant"))) %>%
+  mutate(flagrant_plus_tech_fts=tech_ft+flagrant_ft)
+
+flagrant_tech_fts %>% 
+  slice_max(flagrant_plus_tech_fts,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "It Ain't Over Till the Fat Lady Sings" Award (presented by Kim Kardashian)
+
+most comeback wins where the opposing team had a lead of at least 15 points at some point in the game
+
+```{r largest_leads}
+largest_leads=pbp_curr_yr %>%
+  filter(!is.na(teamTricode), location %in% c("h", "v")) %>%
+  group_by(gameId) %>%
+  summarize(
+    vis_final = max(scoreAway, na.rm = TRUE),
+    home_final = max(scoreHome, na.rm = TRUE),
+    largest_home_lead = max(scoreMargin, na.rm = TRUE),
+    largest_vis_lead = -min(scoreMargin, na.rm = TRUE),
+    home = teamTricode[location == "h"][1],
+    visitor = teamTricode[location == "v"][1],
+    .groups = "drop"
+  ) %>%
+  mutate(
+    winner_team = if_else(home_final > vis_final, home, visitor),
+    loser_team = if_else(winner_team == home, visitor, home),
+    largest_winner_lead = if_else(
+      winner_team == home, largest_home_lead, largest_vis_lead),
+    largest_loser_lead = if_else(
+      winner_team == home, largest_vis_lead, largest_home_lead)
+  )
+```
+
+```{r fat_lady_sings}
+largest_leads %>%
+  group_by(winner_team) %>%
+  summarize(
+    num_losses_lead_by_15 = sum(largest_loser_lead >= 15, na.rm = TRUE),
+    .groups = "drop"
+  ) %>% slice_max(num_losses_lead_by_15,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Snatching Defeat from the Jaws of Victory" Award (presented by the 28-3 Atlanta Falcons)
+
+most losses when having a lead of at least 15 points at some point in the game
+
+```{r snatching_defeat}
+largest_leads %>%
+  group_by(loser_team) %>%
+  summarize(
+    num_losses_lead_by_15 = sum(largest_loser_lead >= 15, na.rm = TRUE),
+    .groups = "drop"
+  ) %>% slice_max(num_losses_lead_by_15,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The Dikembe Mutombo Memorial "No Fly Zone" Award\*
+
+most blocked dunks as the blocking player
+
+```{r no_fly_zone}
+blocked_dunks=inner_join(
+  #missed dunks
+  pbp_curr_yr %>% filter(shotResult=="Missed",str_detect(subType,"Dunk")),
+  #blocks
+  pbp_curr_yr %>% filter(str_detect(description,'BLOCK')),
+  by=join_by(gameId,clock,period))
+
+#as the blocker
+blocked_dunks %>% group_by(personId.y,playerNameI.y) %>% 
+  summarize(count=n()) %>% ungroup() %>% 
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId.y=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId.y) %>% 
+  select(-c(playerNameI.y,personId.y)) %>%
+  slice_max(count,n=5) %>% 
+  gt() %>% as_raw_html()
+```
+
+## The Rejected for Boarding Award (sponsored by United Airlines)\*
+
+most blocked dunks as the dunking player (credit to Legdrop_soup for the idea and asw7412 for the sponsor)
+
+```{r reject_boarding}
+#as the blockee
+blocked_dunks %>% group_by(personId.x,playerNameI.x) %>% 
+  summarize(count=n()) %>% ungroup() %>% 
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId.x=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId.x) %>% 
+  select(-c(playerNameI.x,personId.x)) %>%
+  slice_max(count,n=5) %>% 
+  gt() %>% as_raw_html()
+```
+
+## The No Time to Taunt Award (presented by Tim Duncan)\*
+
+highest percent of blocks that stayed inbounds & recovered by blocker's team, min 0.5 blocks per game (credit to gibberisle for the idea)
+
+```{r no_time_to_taunt}
+
+blocks_w_next_play=pbp_curr_yr %>% 
+  group_by(gameId) %>%
+  mutate(next_play=lead(description),
+         next_location=lead(location)) %>% ungroup() %>% 
+    filter(str_detect(description,'BLOCK')) %>%
+  mutate(recovered_by=
+           if_else(
+             str_detect(next_play,'Rebound',negate = TRUE) & 
+              location==next_location,
+             "own","other"
+           )
+  )
+
+player_blk_info=blocks_w_next_play %>% 
+  group_by(personId,playerNameI,recovered_by) %>% 
+  summarize(blocks=n()) %>% ungroup() %>%
+  pivot_wider(names_from=recovered_by,
+              values_from=blocks,
+              values_fill=0,
+              names_glue = "blocks_recovered_by_{recovered_by}") %>%
+  mutate(blocks=blocks_recovered_by_own+blocks_recovered_by_other,
+         percent_blk_recovered_by_own=blocks_recovered_by_own/blocks) %>% 
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId) %>% select(-playerNameI)
+
+average_games_played=team_info %>% 
+  summarize(average_GP=mean(TeamGP)) %>% pull(average_GP)
+
+player_blk_info %>% filter(blocks>=average_games_played*0.5) %>% 
+  slice_max(percent_blk_recovered_by_own,n=5) %>%
+  select(player_name,blocks,own=blocks_recovered_by_own,
+         percent_blk_recovered_by_own) %>%
+  gt() %>%
+  fmt_percent(columns=percent_blk_recovered_by_own) %>%
+  as_raw_html()
+```
+
+## The "David vs Goliath" Award (presented by Dwyane Wade)
+
+most shots blocked where the blocker is at least 5 inches shorter than the blockee
+
+```{r david_v_goliath}
+
+blocked_shots_w_player_heights=inner_join(
+  #missed shots
+  pbp_curr_yr %>% filter(shotResult=="Missed"),
+  #blocks
+  pbp_curr_yr %>% filter(str_detect(description,'BLOCK')),
+  by=join_by(gameId,clock,period)) %>%
+  left_join(.,player_w_gp_percentages %>% 
+              select(PLAYER_ID,
+                     blocked_player_height=PLAYER_HEIGHT_INCHES),
+            by=join_by(personId.x==PLAYER_ID)) %>%
+  left_join(.,player_w_gp_percentages %>% 
+              select(PLAYER_ID,
+                     blocking_player_height=PLAYER_HEIGHT_INCHES),
+            by=join_by(personId.y==PLAYER_ID)) %>% 
+  mutate(height_diff=blocked_player_height-blocking_player_height)
+
+blocked_shots_w_player_heights %>% filter(height_diff>=5) %>%
+  group_by(personId.y,playerNameI.y) %>% summarize(count=n()) %>%
+  ungroup() %>% 
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId.y=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId.y) %>% 
+  select(-c(playerNameI.y,personId.y)) %>%
+  slice_max(count,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Call Game" Award (presented by Paul "No OT Tonight" George)
+
+most game winning points (defined as the first points that eclipsed the losing team's total) (credit to Necessary_Career_253 for the idea & Clownp3nis for the presenter)
+
+```{r game_winners}
+game_winning_shots=pbp_curr_yr %>% group_by(gameId) %>% 
+  mutate(vis_final=max(scoreAway),
+            home_final=max(scoreHome)) %>% 
+  ungroup() %>%
+  mutate(winner=if_else(home_final>vis_final,"home","visitor"),
+         loser_points=if_else(home_final>vis_final,
+                              vis_final,home_final)) %>%
+  filter((winner=="home" & scoreHome>loser_points)|
+           (winner=="visitor" & scoreAway>loser_points)) %>%
+  group_by(gameId) %>% slice_min(actionId) %>% ungroup() %>%
+  mutate(shotValue=case_when(
+    actionType=="Free Throw"~1,
+    TRUE~shotValue
+  ))
+
+game_win_shot_summary=game_winning_shots %>%
+  group_by(personId,playerNameI) %>% 
+  summarize(game_winning_3=sum(shotValue==3),
+            game_winning_2=sum(shotValue==2),
+            game_winning_ft=sum(shotValue==1),
+            game_winning_points=sum(shotValue)) %>% 
+  ungroup() %>% 
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId) %>% 
+  select(-c(playerNameI))
+
+write_csv(game_win_shot_summary,
+          "Output Data/Game-Winning Shots.csv")
+
+game_win_shot_summary %>% 
+  slice_max(game_winning_points,n=5) %>%
+  select(-personId) %>%
+  gt() %>%
+  cols_label(game_winning_3="GW3",game_winning_2="GW2",
+             game_winning_ft="GWFT",game_winning_points="GWPTS") %>%
+  as_raw_html()
+```
+
+## The Bowling Ball Award (sponsored by [Pete Weber](#0), presented by Glen "Big Baby" Davis)\*
+
+most charges committed (credit to Kdog122025 for the idea)
+
+```{r bowling_ball}
+violations=pbp_curr_yr %>% 
+  filter(
+    str_detect(
+      description,
+      "Charge|Goaltending|Kick|Traveling|3 Second")) %>%
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId) %>%
+  select(-c(playerNameI))
+  
+violations %>% 
+  filter(str_detect(description,"Charge")) %>% 
+  group_by(player_name) %>% 
+  summarize(count=n()) %>% ungroup() %>% 
+  slice_max(count,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## "The Good Ol' Hockey Game, is the Best Game You Can Name" Award (presented by Dominik Hasek)\*
+
+most goaltends committed (credit to Kdog122025 for the idea)
+
+```{r goaltends}
+violations %>% 
+  filter(str_detect(description,"Goaltending")) %>% 
+  group_by(player_name) %>% 
+  summarize(count=n()) %>% ungroup() %>% 
+  slice_max(count,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## "The Thing about Arsenal Is They Always Try to Walk It In" Award (presented by MLS Commissioner Don Garber)\*
+
+most kicked ball violations
+
+```{r kicked_balls}
+violations %>% 
+  filter(str_detect(description,"Kick")) %>% 
+  group_by(player_name) %>% 
+  summarize(count=n()) %>% ungroup() %>% 
+  slice_max(count,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Pack Your Bags" Award (Sponsored by Emirates, the global airline partner of the NBA)
+
+Player with the most traveling calls
+
+```{r travelling}
+violations %>% 
+  filter(str_detect(description,"Traveling")) %>% 
+  group_by(player_name) %>% 
+  summarize(count=n()) %>% ungroup() %>% 
+  slice_max(count,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Counting to 3" Award (Sponsored by the National Parks System, presented by Sesame Street's Count von Count)
+
+Player with the most illegal defense/defensive 3-second calls (credit to PsychoM & MrBuckBuck for the idea)
+
+```{r def_3_seconds}
+violations %>% 
+  filter(str_detect(description,"3 Second")) %>% 
+  group_by(player_name) %>% 
+  summarize(count=n()) %>% ungroup() %>% 
+  slice_max(count,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Time is An Illusion" Award (sponsored by Salvador Dali)
+
+team with the most 24-second shotclock, 8-second backcourt and 5-second inbound violations (credit to Necessary_Career_253 for the idea)
+
+```{r time_is_an_illusion}
+team_violations=pbp_curr_yr %>% filter(
+  actionType=="Turnover",
+  str_detect(subType,"Shot Clock|5 Second|8 Second")
+) %>%
+  mutate(team_name=str_to_title(word(description,1,
+                                     sep=" Turnover:")))
+
+team_violations %>%
+  group_by(team_name) %>%
+  summarize(shot_clock=sum(str_detect(subType,"Shot Clock")),
+            inbound=sum(str_detect(subType,"5 Second")),
+            halfcourt=sum(str_detect(subType,"8 Second"))
+            ) %>%
+  mutate(tot_violations=shot_clock+inbound+halfcourt) %>%
+  slice_max(tot_violations,n=5) %>%
+  gt() %>% as_raw_html()
+```
+
+## The Zaza Pachulia All-Ball Award\*
+
+most 3-pt shooting fouls committed (credit to watchingsongsDL, kingcobweb & An-Indian-In-The-NBA for the idea, and sunnysideoutside for the name)
+
+```{r 3_pt_fouls_commit}
+
+fouls_on_threes=inner_join(
+  #shooting fouls
+  pbp_curr_yr %>% filter(str_detect(description,"S.FOUL")),
+  pbp_curr_yr %>%
+    filter(
+      #missed threes
+      str_detect(description,"Free Throw 3 of 3")|
+        #made threes
+        (str_detect(description,"3PT") & shotResult=="Made")),
+  by=c('gameId','period','clock')) %>% ungroup()
+
+fouls_on_threes %>% group_by(personId.x,playerNameI.x) %>% 
+  summarize(count=n()) %>% ungroup() %>% 
+  left_join(.,player_w_gp_percentages %>% 
+              select(personId.x=PLAYER_ID,player_name=PLAYER_NAME)) %>%
+  relocate(player_name,.after=personId.x) %>%
+  select(-c(playerNameI.x,personId.x)) %>%
+  slice_max(count,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "I'll Have It to Go" Award (sponsored by DoorDash)
+
+coach with lowest timeout utilization (credit to xfinityhomeboy, Ill_Ad3517 & s-sea (who also came up with the name))
+
+```{r most_timeouts_left_over}
+num_timeouts_available=pbp_curr_yr %>% 
+  filter(!is.na(teamTricode)) %>% 
+  group_by(gameId,period,teamTricode) %>% slice(1) %>% 
+  select(gameId,period,teamTricode) %>% ungroup() %>%
+  group_by(team=teamTricode) %>% 
+  summarize(games=sum(period<=4)/4,
+            overtimes=sum(period>4),
+            num_timeouts=7*games+2*overtimes) %>% 
+  left_join(.,team_info %>% 
+              select(TeamName,TEAM_ABBREVIATION),
+            by=join_by(team==TEAM_ABBREVIATION))
+
+num_timeouts_used=pbp_curr_yr %>% 
+  filter(str_detect(description,"Timeout")) %>% 
+  filter(str_detect(description,"Excess",negate=TRUE)) %>%
+  select(gameId,period,description) %>%
+  mutate(team_name=str_to_title(word(description,1,
+                                     sep=" Timeout:"))) %>%
+  group_by(team_name) %>% summarise(num_timeouts_used=n())
+
+timeouts_used_percent=
+  left_join(num_timeouts_available,num_timeouts_used,
+            by=join_by(TeamName==team_name)) %>% 
+  mutate(timeout_use_percent=num_timeouts_used/num_timeouts) %>% 
+  arrange(desc(timeout_use_percent))
+
+timeouts_used_percent %>% 
+  select(team,num_timeouts,
+         num_timeouts_used,timeout_use_percent) %>%
+  slice_min(timeout_use_percent,n=5) %>%
+  gt() %>%
+  fmt_percent(columns=timeout_use_percent) %>%
+  as_raw_html()
+```
+
+## The "Hotheaded" Award (presented by Don Nelson)
+
+most technicals plus ejections for non-players (credit to livejamie for the idea)
+
+```{r hotheaded}
+coach_ejection_techs=pbp_curr_yr %>% filter(
+  teamId==0,
+  actionType =="Ejection"|
+    str_detect(description,"T.FOUL|DOUBLE.TECHNICAL.FOUL")) %>%
+    mutate(coach=if_else(
+      actionType=="Ejection",
+      str_to_title(word(description,1,sep=" Ejection:")),
+      str_to_title(word(description,1,sep=" Foul:"))
+    )) 
+
+coach_ejection_techs %>%
+  group_by(coach) %>%
+  summarize(ejections=sum(actionType=="Ejection"),
+            technicals=sum(actionType=="Foul")) %>%
+  mutate(techs_plus_eject=technicals+ejections) %>%
+  slice_max(techs_plus_eject,n=5) %>% gt() %>%
+  as_raw_html()
+```
+
+\newpage
+
+\KOMAoptions{usegeometry,paper=landscape,pagesize}
+
+\recalctypearea
+
+\newgeometry{left=0.5in, right=0.5in, top=0.5in, bottom=0.5in}
+
+## The "Welcome to the League, Rook" Award (sponsored by Orville Redenbacher)
+
+most combined times stealing from a rookie, blocking a rookie and getting free throws after being fouled by a rookie
+
+```{r events_against_rookies_work}
+
+#get rookies
+rookies=nba_commonallplayers(is_only_current_season=1)$CommonAllPlayers %>%
+  type_convert() %>%
+  filter(FROM_YEAR==2025)
+
+events_by_rookies=inner_join(pbp_curr_yr,rookies %>% select(PERSON_ID),
+             by=join_by(personId==PERSON_ID))
+
+#fouls and free throws have same timing, hence inner join
+free_throws_on_fouls_by_rookies=
+  inner_join(
+    #want to measure free throw trips, not total free throws
+    pbp_curr_yr %>% filter(str_detect(description,"1 of")),
+    #get fouls only committed by rookies
+    events_by_rookies %>% filter(actionType=="Foul"),
+    by=join_by(gameId,clock,period)) %>%
+  #remove instances of technicals by same team player
+  filter(teamTricode.x != teamTricode.y)
+
+fouls_on_free_throws_by_rookies=
+  inner_join(pbp_curr_yr %>% filter(actionType=="Foul"),
+             #get free throw trips by rookies
+             events_by_rookies %>% filter(str_detect(description,"1 of")),
+             by=join_by(gameId,clock,period)) %>%
+  #remove instances of technicals by same team player
+  filter(teamTricode.x != teamTricode.y)
+
+rookie_shots_blocked=
+  inner_join(pbp_curr_yr %>% filter(str_detect(description,"BLOCK")),
+             events_by_rookies %>% filter(shotResult=="Missed"),
+             by=join_by(gameId,clock,period))
+
+shots_blocked_by_rookies=
+  inner_join(pbp_curr_yr %>% filter(shotResult=="Missed"),
+             events_by_rookies %>% filter(str_detect(description,"BLOCK")),
+             by=join_by(gameId,clock,period))
+
+steals_on_turnovers_by_rookies =
+  inner_join(pbp_curr_yr %>% filter(str_detect(description,"STEAL")),
+             #steals are either bad pass or lost ball
+             events_by_rookies %>% 
+               filter(actionType=="Turnover",
+                      subType %in% c("Bad Pass","Lost Ball")),
+             by=join_by(gameId,clock,period))
+
+turnovers_on_steals_by_rookies =
+  inner_join(
+    #steals are either bad pass or lost ball
+    pbp_curr_yr %>% 
+      filter(actionType=="Turnover",subType %in% c("Bad Pass","Lost Ball")),
+    events_by_rookies %>% filter(str_detect(description,"STEAL")),
+    by=join_by(gameId,clock,period))
+
+events_against_rookies=
+  bind_rows(free_throws_on_fouls_by_rookies,
+            rookie_shots_blocked,
+            steals_on_turnovers_by_rookies,
+            fouls_on_free_throws_by_rookies,
+            shots_blocked_by_rookies,
+            turnovers_on_steals_by_rookies)
+
+rm(free_throws_on_fouls_by_rookies,
+            rookie_shots_blocked,
+            steals_on_turnovers_by_rookies,
+            fouls_on_free_throws_by_rookies,
+            shots_blocked_by_rookies,
+            turnovers_on_steals_by_rookies)
+  
+events_against_rookies_summ=
+  events_against_rookies %>%
+  group_by(personId.x,playerNameI.x) %>%
+  summarize(num_times_stolen_from_rookie=
+              sum(str_detect(description.x,"STEAL")),
+            num_times_stolen_by_rookie=
+              sum(str_detect(description.y,"STEAL")),
+            num_times_fouled_by_rookie=
+              sum(str_detect(description.x,"1 of")),
+            num_times_fouled_rookie=
+              sum(str_detect(description.y,"1 of")),
+            num_times_blocked_rookie=
+              sum(str_detect(description.x,"BLOCK")),
+            num_times_blocked_by_rookie=
+              sum(str_detect(description.y,"BLOCK")),
+            net_steals_rookies=
+              num_times_stolen_from_rookie-num_times_stolen_by_rookie,
+            net_fouls_rookies=
+              num_times_fouled_by_rookie-num_times_fouled_rookie,
+            net_blocks_rookies=
+              num_times_blocked_rookie-num_times_blocked_by_rookie,
+            positive_events_against_rookies=
+              num_times_stolen_from_rookie+num_times_fouled_by_rookie+
+              num_times_blocked_rookie,
+            negative_events_against_rookies=
+              num_times_stolen_by_rookie+num_times_fouled_rookie+
+              num_times_blocked_by_rookie,
+            net_events_against_rookies=
+              positive_events_against_rookies-negative_events_against_rookies
+            ) %>% 
+  ungroup() %>%
+  left_join(.,
+            player_w_gp_percentages %>% 
+              select(personId.x=PLAYER_ID,PLAYER_NAME,G_PERCENT,MIN)) %>%
+  relocate(PLAYER_NAME) %>% select(-c(personId.x,playerNameI.x)) %>%
+  mutate(
+    across(
+      positive_events_against_rookies:net_events_against_rookies,
+      ~./MIN*36,
+      .names="{.col}_per_36"))
+```
+
+```{r welcome_to_the_league_rook}
+#| tbl-pos: T
+#| layout-ncol: 1
+
+events_against_rookies_summ %>% 
+  filter(G_PERCENT>=0.5,MIN>=300) %>%
+  select(player=PLAYER_NAME,min=MIN,
+         num_times_stolen_from_rookie,num_times_fouled_by_rookie,
+         num_times_blocked_rookie,num_times_stolen_by_rookie,
+         num_times_fouled_rookie,num_times_blocked_by_rookie,
+         positive_events_against_rookies_per_36:
+           net_events_against_rookies_per_36) %>%
+  slice_max(net_events_against_rookies_per_36,n=5) %>%
+  gt() %>%
+  tab_spanner(label="Positive Events",3:5) %>%
+  tab_spanner(label="Negative Events",6:8) %>%
+  tab_spanner(label="Per 36",9:11) %>%
+  cols_label(num_times_stolen_from_rookie="Steals Against Rookie",
+             num_times_stolen_by_rookie="Steals By Rookie",
+             num_times_fouled_by_rookie="Fouled By Rookie",
+             num_times_fouled_rookie="Foul Against Rookie",
+             num_times_blocked_rookie="Blocks Against Rookie",
+             num_times_blocked_by_rookie="Blocks by Rookie",
+             positive_events_against_rookies_per_36="Positive Events",
+             negative_events_against_rookies_per_36="Negative Events",
+             net_events_against_rookies_per_36="Net Events") %>%
+  fmt_number(ends_with("per_36"),decimals=4) %>%
+  cols_width(player~px(150),
+             everything()~px(70))
+```
+
+## The "The Future is Now, Old Man" Award (sponsored by the National Basketball Retired Players Association)
+
+most combined times getting blocked by a rookie, getting the ball stolen by a rookie and fouling a rookie who takes free throws
+
+```{r future_is_now_old_man}
+#| tbl-pos: T
+#| layout-ncol: 1
+
+events_against_rookies_summ %>% 
+  filter(G_PERCENT>=0.5,MIN>=300) %>%
+  select(player=PLAYER_NAME,min=MIN,
+         num_times_stolen_from_rookie,num_times_fouled_by_rookie,
+         num_times_blocked_rookie,num_times_stolen_by_rookie,
+         num_times_fouled_rookie,num_times_blocked_by_rookie,
+         positive_events_against_rookies_per_36:
+           net_events_against_rookies_per_36) %>%
+  slice_min(net_events_against_rookies_per_36,n=5) %>%
+  gt() %>%
+  tab_spanner(label="Positive Events",3:5) %>%
+  tab_spanner(label="Negative Events",6:8) %>%
+  tab_spanner(label="Per 36",9:11) %>%
+  cols_label(num_times_stolen_from_rookie="Steals Against Rookie",
+             num_times_stolen_by_rookie="Steals By Rookie",
+             num_times_fouled_by_rookie="Fouled By Rookie",
+             num_times_fouled_rookie="Foul Against Rookie",
+             num_times_blocked_rookie="Blocks Against Rookie",
+             num_times_blocked_by_rookie="Blocks by Rookie",
+             positive_events_against_rookies_per_36="Positive Events",
+             negative_events_against_rookies_per_36="Negative Events",
+             net_events_against_rookies_per_36="Net Events") %>%
+  fmt_number(ends_with("per_36"),decimals=4) %>%
+  cols_width(player~px(150),
+             everything()~px(70))
+```

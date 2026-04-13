@@ -1,0 +1,240 @@
+---
+title: "NBA Alt Awards Graveyard"
+author: "Sumitro Datta"
+format: pdf
+editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
+geometry:
+  - top=20mm
+  - left=15mm
+  - right=15mm
+---
+
+```{r load_pkgs, results="hide"}
+pacman::p_load("tidyverse","rvest","polite","RKaggle","janitor", "gt")
+```
+
+```{r data_load}
+current_year=2026
+
+team_summaries=read_csv("Data/Team Summaries.csv") %>% 
+  filter(season==current_year) 
+
+bbref_bow=bow("https://www.basketball-reference.com/",
+              user_agent = "Sumitro Datta",force=TRUE,delay = 10)
+```
+
+```{r full_pbp_load}
+current_year=2026
+current_year_for_pbp=paste0(current_year-1,"-",str_sub(current_year,-2))
+pbp_curr_yr=read_csv(paste0("Data/",current_year_for_pbp,"_pbp.csv")) %>% 
+  group_by(gameId) %>% 
+  fill(scoreHome,scoreAway) %>%
+  mutate(scoreMargin=scoreHome-scoreAway,.after=scoreAway) %>%
+  mutate(clutch=(
+    (period>4)|
+      (period==4 & abs(scoreMargin)<=5 & clock<='PT05')
+    )) %>%
+  ungroup()
+```
+
+# Awards
+
+## The "Don't Check the Box Score" Award
+
+teams that most over performed their Pythagorean record (credit to OhTheGrandeur for the idea)
+
+```{r pyth_overperform}
+team_summaries %>% mutate(pyth_diff=w-pw) %>% 
+  slice_max(pyth_diff,n=3) %>% select(team,w,pw) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Dude, Check the Box Score" Award
+
+teams that most under performed their Pythagorean record (credit to OhTheGrandeur for the idea)
+
+```{r pyth_underperform}
+team_summaries %>% mutate(pyth_diff=w-pw) %>% 
+  slice_min(pyth_diff,n=3) %>% select(team,w,pw) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Fix My Own Mistakes" Award
+
+most shots after rebounding own missed shot (credit to Necessary_Career_253 for the idea)
+
+```{r fix_own_mistake}
+pbp_curr_yr_w_before_after=pbp_curr_yr %>% 
+  group_by(gameId) %>%
+  mutate(next_play=lead(description),
+         next_player=lead(personId),
+         last_play=lag(description),
+         last_player=lag(personId)) %>% ungroup()
+
+shot_after_own_rebound_miss=pbp_curr_yr_w_before_after %>% 
+    filter(str_detect(description,"REBOUND")) %>%
+  filter(personId==next_player,personId==last_player,
+         str_detect(last_play,"MISS")) %>%
+  filter(str_detect(next_play,"PTS")) %>% 
+  mutate(shot_value=if_else(str_detect(next_play,"3PT"),3,2)) %>% 
+  group_by(personId,playerNameI) %>% 
+  summarize(fix_with_3=sum(shot_value==3),
+            fix_with_2=sum(shot_value==2),
+            fixed_shots=n(),
+            fixed_points=sum(shot_value)) %>% 
+  ungroup()
+
+shot_after_own_rebound_miss %>% slice_max(fixed_points,n=10) %>%
+  gt() %>%
+  as_raw_html()
+```
+
+## The "Human Highlight Reel" Award (presented by Dominique Wilkins)\*
+
+players that had the most games with 2+ dunks (credit to frosiano for the idea)
+
+```{r two_plus_dunks}
+made_dunks=pbp_curr_yr %>% 
+    filter(str_detect(description,"Dunk"),shotResult=="Made")
+
+made_dunks %>% group_by(gameId,personId,playerNameI) %>% 
+  summarize(dunks_in_game=n()) %>%
+  filter(dunks_in_game>=2) %>% ungroup() %>% 
+  group_by(personId,playerNameI) %>% 
+  summarize(games_w_2plus_dunks=n()) %>% 
+  ungroup() %>%
+  slice_max(games_w_2plus_dunks,n=10) %>% gt() %>%
+  as_raw_html()
+```
+
+## The "Most Spectacular Self-Destruction" Award
+
+furthest deviation from preseason record over/unders (credit to Hockeyguy928 for the name)
+
+```{r self_destruct}
+session=nod(bbref_bow,path=paste0("leagues/NBA_",current_year,
+                                  "_preseason_odds.html"))
+preseason_odds=scrape(session) %>% 
+  html_nodes(xpath='//*[(@id = "NBA_preseason_odds")]') %>% 
+  html_table() %>% .[[1]]
+
+preseason_odds %>% clean_names() %>% filter(str_detect(result,"under")) %>%
+  mutate(wins=as.numeric(word(result,sep="-")),
+         losses=as.numeric(word(word(result,sep="-",2),sep=" ")),
+         pace=round((wins/(wins+losses))*82,0),
+         diff=w_l_o_u-pace) %>% 
+  slice_max(diff,n=3) %>% select(-x) %>% gt()
+```
+
+## The "Boneheaded Foul" Award (presented by Sideshow Mel) \[TO-DO\]
+
+```{r boneheaded,eval=FALSE}
+View(
+  pbp_curr_yr %>% 
+    #one possession games
+    filter(abs(scoreMargin)<=3) %>%
+    #check to see who is leading
+    mutate(leading=if_else(scoreMargin<0,"v","h")) %>%
+    #last 30 seconds of 4th quarter and any overtime
+    filter(period>3 & clock<='PT00M30') %>%
+    filter(actionType=="Foul",leading==location)
+)
+```
+
+## The "I'm Gonna Get Mine" Award
+
+biggest PPG increase from losses to wins, min 50% of games played, 10 PPG and more losses than wins (credit to Drummallumin for the idea)
+
+```{r box_scores}
+x2025_2026_box_scores=
+  get_dataset("eoinamoore/historical-nba-data-and-player-box-scores") %>%
+  .[[5]] %>% filter(gameDateTimeEst>=mdy("10/21/2025")) %>% 
+  filter(!is.na(numMinutes) & !is.na(win)) %>% 
+  mutate(game_score=
+           points+fieldGoalsMade*0.4-0.7*fieldGoalsAttempted-
+           0.4*(freeThrowsAttempted-freeThrowsMade)+
+           0.7*reboundsOffensive+0.3*reboundsDefensive+steals+
+           0.7*assists+0.7*blocks-0.4*foulsPersonal-turnovers)
+```
+
+```{r win_loss_split_process}
+win_loss_ppg_gmsc=x2025_2026_box_scores %>%
+  group_by(personId,firstName,lastName,win) %>% 
+  summarize(n=n(),points=sum(points),game_score=sum(game_score)) %>%
+  mutate(win=if_else(win==0,"loss","win"),
+         name=paste(firstName,lastName)) %>%
+  pivot_wider(names_from=win,values_from = c(n,points,game_score),
+              values_fill = 0) %>%
+  mutate(g_total=n_loss+n_win,
+         pts_total=points_loss+points_win,
+         ppg_loss=points_loss/n_loss,
+         ppg_win=points_win/n_win,
+         ppg_total=pts_total/g_total,
+         ppg_diff=ppg_loss-ppg_win,
+         gmsc_loss=game_score_loss/n_loss,
+         gmsc_win=game_score_win/n_win,
+         gmsc_diff=gmsc_loss-gmsc_win) %>%
+  ungroup()
+```
+
+```{r gonna_get_mine_ppg}
+win_loss_ppg_gmsc %>% filter(
+  g_total>=(win_loss_ppg_gmsc %>% 
+    slice_max(g_total,n=1,with_ties = FALSE) %>% pull(g_total))/2,
+  n_loss>=n_win,
+  ppg_total>=10
+) %>% slice_max(ppg_diff,n=5) %>%
+  select(name,n_loss,ppg_loss,n_win,ppg_win,ppg_diff) %>%
+  gt() %>% 
+  fmt_number(contains("ppg"),decimals=2) %>%
+  as_raw_html()
+```
+
+Alternatively: biggest game score increase from road to home, min 50% of games played and more losses than wins
+
+```{r gonna_get_mine_gmsc}
+win_loss_ppg_gmsc %>% filter(
+  g_total>=(win_loss_ppg_gmsc %>% 
+    slice_max(g_total,n=1,with_ties = FALSE) %>% pull(g_total))/2,
+  n_loss>=n_win
+) %>% slice_max(gmsc_diff,n=5) %>%
+  select(name,n_loss,gmsc_loss,n_win,gmsc_win,gmsc_diff) %>%
+  gt() %>% 
+  fmt_number(contains("gmsc"),decimals=2) %>%
+  as_raw_html()
+```
+
+## The "I Put the Team on My Back Doe" (presented by [Greg Jennings](https://www.youtube.com/watch?v=1P0yfq2wDvU))
+
+biggest PPG decrease from wins to losses, min 50% of games played, 10 PPG and more wins than losses (credit to Drummallumin for the idea)
+
+```{r team_on_my_back_ppg}
+win_loss_ppg_gmsc %>% filter(
+  g_total>=(win_loss_ppg_gmsc %>% 
+    slice_max(g_total,n=1,with_ties = FALSE) %>% pull(g_total))/2,
+  n_loss<=n_win,
+  ppg_total>=10
+) %>% slice_min(ppg_diff,n=5) %>%
+  select(name,n_win,ppg_win,n_loss,ppg_loss,ppg_diff) %>%
+  gt() %>% 
+  fmt_number(contains("ppg"),decimals=2) %>%
+  as_raw_html()
+```
+
+Alternatively: biggest game score decrease from wins to losses, min 50% of games played and more wins than losses
+
+```{r team_on_my_back_gmsc}
+win_loss_ppg_gmsc %>% filter(
+  g_total>=(win_loss_ppg_gmsc %>% 
+    slice_max(g_total,n=1,with_ties = FALSE) %>% pull(g_total))/2,
+  n_loss<=n_win
+) %>% slice_min(gmsc_diff,n=5) %>%
+  select(name,n_win,gmsc_win,n_loss,gmsc_loss,gmsc_diff) %>%
+  gt() %>% 
+  fmt_number(contains("gmsc"),decimals=2) %>%
+  as_raw_html()
+```
