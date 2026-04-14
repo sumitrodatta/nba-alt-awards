@@ -1,0 +1,91 @@
+team,position_2,rotation,pos_vorp_wo_leader,conference
+ATL,big,"Onyeka Okongwu, Kristaps Porziņģis, Mouhamed Gueye, Jonathan Kuminga, Jock Landale, Asa Newell",1.1,East
+ATL,guard,"Nickeil Alexander-Walker, CJ McCollum, Trae Young, Vít Krejčí, Gabe Vincent, Keaton Wallace",1.1,East
+ATL,wing,"Jalen Johnson, Dyson Daniels, Luke Kennard, Jonathan Kuminga, Corey Kispert, Zaccharie Risacher",2.6,East
+BOS,big,"Neemias Queta, Luka Garza, Jayson Tatum, Josh Minott, Nikola Vučević",3,East
+BOS,guard,"Derrick White, Payton Pritchard, Anfernee Simons",3.3999999999999995,East
+BOS,wing,"Jaylen Brown, Sam Hauser, Baylor Scheierman, Jordan Walsh, Ron Harper Jr., Hugo González",3.3,East
+BRK,big,"Nic Claxton, Day'Ron Sharpe, E.J. Liddell, Danny Wolf",0.49999999999999994,East
+BRK,guard,"Egor Dёmin, Malachi Smith, Ochai Agbaji, Tyson Etienne, Cam Thomas, Drake Powell, Nolan Traoré",-3.3,East
+BRK,wing,"Michael Porter Jr., Josh Minott, Chaney Johnson, Ziaire Williams, Ochai Agbaji, Tyrese Martin, Noah Clowney, Terance Mann, Jalen Wilson, Ben Saraf",-2.8,East
+CHI,big,"Nikola Vučević, Jalen Smith, Guerschon Yabusele, Lachlan Olbrich, Nick Richards",0.1,East
+CHI,guard,"Josh Giddey, Tre Jones, Jevon Carter, Yuki Kawamura, Coby White, Rob Dillingham",0.49999999999999994,East
+CHI,wing,"Ayo Dosunmu, Matas Buzelis, Kevin Huerter, Collin Sexton, Leonard Miller, Dalen Terry, Julian Phillips, Isaac Okoro, Patrick Williams",-0.6,East
+CHO,big,"Moussa Diabaté, Ryan Kalkbrenner, Grant Williams, Tidjane Salaün",2.4,East
+CHO,guard,"LaMelo Ball, Collin Sexton, Coby White, Josh Green, KJ Simpson, Tre Mann",0.7999999999999999,East
+CHO,wing,"Kon Knueppel, Miles Bridges, Brandon Miller, Pat Connaughton, Liam McNeeley, Sion James",4,East
+CLE,big,"Evan Mobley, Jarrett Allen, Dean Wade, Thomas Bryant",2.9000000000000004,East
+CLE,guard,"James Harden, Craig Porter Jr., Lonzo Ball, Darius Garland, Tyrese Proctor, Dennis Schröder",1.2999999999999998,East
+CLE,wing,"Donovan Mitchell, Jaylon Tyson, Sam Merrill, Dean Wade, Keon Ellis, Max Strus, Nae'Qwan Tomlin, Larry Nance Jr., De'Andre Hunter",2.4,East
+DAL,big,"Daniel Gafford, Anthony Davis, Marvin Bagley III, P.J. Washington, Dwight Powell, Moussa Cisse",1.2999999999999998,West
+DAL,guard,"Brandon Williams, Max Christie, D'Angelo Russell, Jaden Hardy, AJ Johnson, Ryan Nembhard",-1,West
+DAL,wing,"Cooper Flagg, Naji Marshall, Klay Thompson, Caleb Martin, John Poulakidas, Khris Middleton",0.5,West
+DEN,big,"Nikola Jokić, Aaron Gordon, Jonas Valančiūnas, DaRon Holmes, Zeke Nnaji",1.1,West
+DEN,guard,"Jamal Murray, Jalen Pickett, Bruce Brown",-0.4,West
+DEN,wing,"Tim Hardaway Jr., Cameron Johnson, Christian Braun, Peyton Watson, Spencer Jones, Julian Strawther",0.7999999999999999,West
+DET,big,"Jalen Duren, Paul Reed, Tobias Harris, Isaiah Stewart",3.9000000000000004,East
+DET,guard,"Cade Cunningham, Daniss Jenkins, Jaden Ivey, Marcus Sasser, Chaz Lanier",0.6000000000000001,East
+DET,wing,"Ausar Thompson, Javonte Green, Duncan Robinson, Caris LeVert, Kevin Huerter, Ron Holland",3.7,East
+GSW,big,"Al Horford, Draymond Green, Quinten Post, Trayce Jackson-Davis, Kristaps Porziņģis, Jonathan Kuminga",0.8000000000000002,West
+GSW,guard,"Stephen Curry, De'Anthony Melton, Pat Spencer, LJ Cryer",-0.30000000000000004,West
+GSW,wing,"Jimmy Butler, Brandin Podziemski, Gary Payton II, Moses Moody, Gui Santos, Buddy Hield, Will Richard, Malevy Leons, Nate Williams",3.6,West
+HOU,big,"Alperen Şengün, Jabari Smith Jr., Clint Capela, Steven Adams",1.6,West
+HOU,guard,"Amen Thompson, Reed Sheppard, JD Davison, Aaron Holiday",2.4,West
+HOU,wing,"Kevin Durant, Josh Okogie, Tari Eason, Jae'Sean Tate, Dorian Finney-Smith",-0.10000000000000003,West
+IND,big,"Pascal Siakam, Jay Huff, Micah Potter, Obi Toppin, Isaiah Jackson, Tony Bradley, Jeremiah Robinson-Earl",1.4,East
+IND,guard,"T.J. McConnell, Andrew Nembhard, Quenton Jackson, Taelon Peter, Ethan Thompson",-0.4,East
+IND,wing,"Obi Toppin, Jalen Slawson, Kobe Brown, Bennedict Mathurin, Jarace Walker, Johnny Furphy, Jeremiah Robinson-Earl, Ben Sheppard, Aaron Nesmith, Kam Jones",-2.6,East
+LAC,big,"John Collins, Ivica Zubac, Brook Lopez, Isaiah Jackson, Kobe Brown, Yanic Konan Niederhäuser",1.5,West
+LAC,guard,"James Harden, Kris Dunn, Darius Garland, Chris Paul, Cam Christie",0.7000000000000001,West
+LAC,wing,"Kawhi Leonard, Jordan Miller, Derrick Jones Jr., Nicolas Batum, Kobe Brown, Bennedict Mathurin, Bogdan Bogdanović, Kobe Sanders",0.8000000000000002,West
+LAL,big,"Jaxson Hayes, Deandre Ayton, Drew Timme, Rui Hachimura, Maxi Kleber",0.3,West
+LAL,guard,"Luka Dončić, Marcus Smart, Bronny James, Nick Smith Jr., Gabe Vincent",-1.2000000000000002,West
+LAL,wing,"LeBron James, Austin Reaves, Jake LaRavia, Luke Kennard, Jarred Vanderbilt, Dalton Knecht",2.6,West
+MEM,big,"Santi Aldama, Jock Landale, Jaren Jackson Jr., Zach Edey, GG Jackson II, Taylor Hendricks",1,West
+MEM,guard,"Cam Spencer, Ty Jerome, Javon Small, Vince Williams Jr., Ja Morant, Scotty Pippen Jr., Lucas Williamson, Walter Clayton",0.8,West
+MEM,wing,"Cedric Coward, John Konchar, Olivier-Maxence Prosper, Kentavious Caldwell-Pope, Adama-Alpha Bal, DeJon Jarreau, Tyler Burton, Rayan Rupert, Toby Okani, Jaylen Wells, Jahmai Mashack",-2,West
+MIA,big,"Bam Adebayo, Kel'el Ware, Nikola Jović",1.5,East
+MIA,guard,"Norman Powell, Dru Smith, Davion Mitchell, Kasparas Jakučionis",2.1,East
+MIA,wing,"Andrew Wiggins, Tyler Herro, Jaime Jaquez Jr., Simone Fontecchio, Pelle Larsson, Myron Gardner, Keshad Johnson",3.7,East
+MIL,big,"Giannis Antetokounmpo, Bobby Portis, Myles Turner, Jericho Sims, Ousmane Dieng",0.4,East
+MIL,guard,"Kevin Porter Jr., Ryan Rollins, Cormac Ryan, Cole Anthony",1,East
+MIL,wing,"Gary Harris, Kyle Kuzma, Pete Nance, Amir Coffey, Taurean Prince, Cam Thomas, Andre Jackson Jr., A.J. Green, Gary Trent Jr.",-3.5,East
+MIN,big,"Julius Randle, Rudy Gobert, Naz Reid, Joan Beringer",3.4,West
+MIN,guard,"Donte DiVincenzo, Bones Hyland, Ayo Dosunmu, Mike Conley, Rob Dillingham",1.4000000000000001,West
+MIN,wing,"Anthony Edwards, Jaden McDaniels, Kyle Anderson, Jaylen Clark, Terrence Shannon Jr.",1,West
+NOP,big,"Zion Williamson, Karlo Matković, Derik Queen, Yves Missi, Kevon Looney",1.2999999999999998,West
+NOP,guard,"Dejounte Murray, Jose Alvarado, Jeremiah Fears, Jordan Poole",-0.8,West
+NOP,wing,"Trey Murphy III, Saddiq Bey, Bryce McGowens, Herbert Jones, Jordan Hawkins, Micah Peavy",-0.8,West
+NYK,big,"Karl-Anthony Towns, Mitchell Robinson, Ariel Hukporti, Guerschon Yabusele",1.5,East
+NYK,guard,"Jalen Brunson, Miles McBride, Jose Alvarado, Tyler Kolek",1.6,East
+NYK,wing,"Mikal Bridges, Josh Hart, OG Anunoby, Landry Shamet, Mohamed Diawara, Jordan Clarkson",4.9,East
+OKC,big,"Chet Holmgren, Isaiah Hartenstein, Jaylin Williams, Kenrich Williams, Branden Carlson, Ousmane Dieng",4.3,West
+OKC,guard,"Shai Gilgeous-Alexander, Isaiah Joe, Cason Wallace",3.0999999999999996,West
+OKC,wing,"Ajay Mitchell, Alex Caruso, Jalen Williams, Aaron Wiggins, Jared McCain, Luguentz Dort, Brooks Barnhizer",2.3,West
+ORL,big,"Paolo Banchero, Goga Bitadze, Wendell Carter Jr., Jonathan Isaac, Moritz Wagner",2.1,East
+ORL,guard,"Jalen Suggs, Anthony Black, Jevon Carter, Tyus Jones, Jase Richardson",0.7,East
+ORL,wing,"Desmond Bane, Franz Wagner, Tristan Da Silva, Jamal Cain, Noah Penda, Jett Howard",2.0999999999999996,East
+PHI,big,"Joel Embiid, Dominick Barlow, Andre Drummond, Trendon Watford, Adem Bona",0.30000000000000004,East
+PHI,guard,"Tyrese Maxey, VJ Edgecombe, Cameron Payne, Jared McCain",0.5,East
+PHI,wing,"Paul George, Justin Edwards, Quentin Grimes, Kelly Oubre Jr., Jabari Walker",0.5000000000000001,East
+PHO,big,"Mark Williams, Oso Ighodaro, Khaman Maluach, Rasheer Fleming, Nick Richards",0.10000000000000009,West
+PHO,guard,"Collin Gillespie, Grayson Allen, Jordan Goodwin, Jamaree Bouyea",3.3,West
+PHO,wing,"Devin Booker, Royce O'Neale, Ryan Dunn, Jalen Green, Amir Coffey, Isaiah Livers, Dillon Brooks",1.9000000000000001,West
+POR,big,"Donovan Clingan, Robert Williams, Toumani Camara, Duop Reath, Yang Hansen",1.9,West
+POR,guard,"Jrue Holiday, Shaedon Sharpe, Scoot Henderson, Vít Krejčí, Blake Wesley, Caleb Love",-0.4,West
+POR,wing,"Deni Avdija, Jerami Grant, Matisse Thybulle, Kris Murray, Rayan Rupert, Sidy Cissoko",0.8,West
+SAC,big,"Domantas Sabonis, Precious Achiuwa, Dylan Cardwell, Drew Eubanks, Maxime Raynaud",-0.4,West
+SAC,guard,"Zach LaVine, Malik Monk, Keon Ellis, Dennis Schröder, Devin Carter, Killian Hayes",-0.3,West
+SAC,wing,"DeMar DeRozan, Russell Westbrook, Keegan Murray, Doug McDermott, Daeqwon Plowden, Nique Clifford",-1.9000000000000001,West
+SAS,big,"Victor Wembanyama, Luke Kornet, Harrison Barnes, Kelly Olynyk, Jeremy Sochan",3,West
+SAS,guard,"De'Aaron Fox, Stephon Castle, Jordan McLaughlin, Lindy Waters III",2.1,West
+SAS,wing,"Julian Champagnie, Keldon Johnson, Dylan Harper, Devin Vassell, Carter Bryant",4,West
+TOR,big,"Scottie Barnes, Sandro Mamukelashvili, Collin Murray-Boyles, Jakob Poeltl, Jonathan Mogbo",4.2,East
+TOR,guard,"Immanuel Quickley, Ja'Kobe Walter, Jamal Shead",0.09999999999999998,East
+TOR,wing,"Brandon Ingram, RJ Barrett, A.J. Lawson, Jamison Battle, Gradey Dick, Ochai Agbaji",0.1,East
+UTA,big,"Lauri Markkanen, Jusuf Nurkić, Kyle Filipowski, Kevin Love, Blake Hinson, Oscar Tshiebwe",2,West
+UTA,guard,"Keyonte George, Walter Clayton, Isaiah Collier, Kennedy Chandler, Bez Mbeng, Elijah Harkless",-1.6,West
+UTA,wing,"John Konchar, Kyle Anderson, Svi Mykhailiuk, Taylor Hendricks, Brice Sensabaugh, Ace Bailey, Cody Williams",-3.0999999999999996,West
+WAS,big,"Alex Sarr, Marvin Bagley III, Tristan Vukcevic, Anthony Gill, Julian Reese",0.3,East
+WAS,guard,"CJ McCollum, Sharife Cooper, Jaden Hardy, AJ Johnson, Bub Carrington",-2.7,East
+WAS,wing,"Justin Champagnie, Kyshawn George, Corey Kispert, Malaki Branham, Bilal Coulibaly, Cam Whitmore, Jamir Watkins, Leaky Black, Khris Middleton, Will Riley, Tre Johnson",-2.9,East
