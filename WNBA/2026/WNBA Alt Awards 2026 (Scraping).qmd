@@ -1,0 +1,136 @@
+---
+title: "NBA Alt Awards 2026 (Scraping)"
+author: "Sumitro Datta"
+format: pdf
+editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
+geometry:
+  - top=20mm
+  - left=15mm
+  - right=15mm
+---
+
+```{r load_pkgs, results="hide"}
+pacman::p_load("tidyverse","rvest","polite","janitor", "gt")
+```
+
+```{r data_load}
+current_year=2026
+```
+
+# Awards
+
+## The "Master Baiter" Award (sponsored by Bass Pro Shops & Kleenex)
+
+highest rate of 3-point shooting fouls drawn as percent of total 3-point attempts (PBPStats.com) (credit to OhTheGrandeur for suggesting the change to a rate stat)
+
+```{r master_baiter_scrape}
+pbp_stats_data=jsonlite::fromJSON(
+  "https://api.pbpstats.com/get-totals/wnba?Season=2026&SeasonType=Regular+Season&Type=Player&StatType=Totals&Table=FTs")$multi_row_table_data
+```
+
+```{r master_baiter_output}
+ft_source=pbp_stats_data %>%
+  select(name=Name,g=GamesPlayed,team=TeamAbbreviation,
+         x3pt_sfd=ThreePtShootingFoulsDrawn,
+         x3pt_and_1s=`3pt And 1 Free Throw Trips`,
+         FG3M,FG3A) %>%
+  replace_na(list(x3pt_sfd=0,x3pt_and_1s=0,FG3M=0,FG3A=0))
+
+rate_based_3pt_fouls_drawn=ft_source %>%
+  mutate(x3pt_sfd_tot=x3pt_sfd+x3pt_and_1s,
+         rate=x3pt_sfd_tot/FG3A)
+
+rate_based_3pt_fouls_drawn %>% filter(FG3M>=30) %>% 
+  slice_max(rate,n=5) %>% 
+  select(name,team,x3pt_sfd,x3pt_and_1s,x3pt_sfd_tot,FG3A,rate) %>% 
+  gt() %>% fmt_percent(columns=rate) %>% as_raw_html()
+```
+
+## The Yeet Award (presented by Jey Uso & [Terry](https://www.youtube.com/shorts/2Bjy5YQ5xPc))
+
+longest distance on 3-pointers attempted, min 30 3PM (PBPStats)
+
+```{r yeet}
+pbp_stats_data %>% filter(FG3M>=30) %>% 
+  select(Name,FG3M,FG3A,Avg3ptShotDistance) %>% 
+  slice_max(Avg3ptShotDistance,n=5) %>%
+  gt() %>% fmt_number(Avg3ptShotDistance,decimals=2) %>% as_raw_html()
+```
+
+## The "Hug the Line" Award
+
+shortest distance on 3-pointers attempted, min 30 3PM (PBPStats.com)
+
+```{r hug_the_line}
+pbp_stats_data %>% filter(FG3M>=30) %>% 
+  select(Name,FG3M,FG3A,Avg3ptShotDistance) %>% 
+  slice_min(Avg3ptShotDistance,n=5) %>%
+  gt() %>% fmt_number(Avg3ptShotDistance,decimals=2) %>% as_raw_html()
+```
+
+## The Wingwoman Award (presented by Thelma & Louise)
+
+most assists between teammates, weighing for equality using harmonic mean (PBPStats.com)
+
+```{r wingwoman_scrape}
+assist_combo_data=jsonlite::fromJSON("https://api.pbpstats.com/get-assist-combo-summary/wnba?Season=2026&SeasonType=Regular%2BSeason")$results
+```
+
+```{r wingwoman_work}
+assist_combo_data_both_directions=
+  assist_combo_data %>% 
+  select(assist_player,assist_player_id,scorer_player,scorer_player_id,team,
+         total,total2s,total3s) %>%
+  mutate(
+    player1 = pmin(assist_player, scorer_player),
+    player2 = pmax(assist_player, scorer_player),
+    direction = if_else(assist_player == player1, "p1_to_p2", "p2_to_p1")
+  ) %>%
+  select(player1, player2, team, direction, total, total2s, total3s) %>%
+  pivot_wider(
+    names_from = direction,
+    values_from = c(total, total2s, total3s),
+    values_fill = 0
+  ) %>%
+    mutate(harmonic_mean = 2 * total_p1_to_p2 * total_p2_to_p1 /
+                 (total_p1_to_p2 + total_p2_to_p1)
+  ) %>%
+  arrange(desc(harmonic_mean)) %>%
+  mutate(total=total_p1_to_p2+total_p2_to_p1,.before = harmonic_mean) %>%
+  mutate(diff_between_sides=abs(total_p1_to_p2-total_p2_to_p1))
+```
+
+```{r wingwoman_output}
+#| tbl-pos: T
+#| layout-ncol: 1
+
+assist_combo_data_both_directions %>%
+  select(player1:total_p1_to_p2,total,harmonic_mean) %>%
+  slice_max(harmonic_mean,n=5) %>% 
+  gt() %>% fmt_number(harmonic_mean,decimals=2) %>%
+  tab_spanner(label="Totals",columns = 4:6) %>%
+  cols_label(total_p1_to_p2="P1-to-P2",
+             total_p2_to_p1="P2-to-P1",
+             total="Duo")
+```
+
+## The "I'm a Tier 3 Sub!" Award (presented by Pokimane)
+
+biggest discrepancies in assist combinations between teammates (PBPStats.com)
+
+```{r tier_3_sub}
+#| tbl-pos: T
+#| layout-ncol: 1
+
+assist_combo_data_both_directions %>%
+  select(player1:total_p1_to_p2,total,diff_between_sides) %>%
+  slice_max(diff_between_sides,n=5) %>% gt() %>%
+  tab_spanner(label="Totals",columns = 4:6) %>%
+  cols_label(total_p1_to_p2="P1-to-P2",
+             total_p2_to_p1="P2-to-P1",
+             total="Duo")
+```
